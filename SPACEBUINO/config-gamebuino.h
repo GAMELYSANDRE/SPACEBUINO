@@ -1,0 +1,2 @@
+#define SOUND_CHANNELS 1
+#define SOUND_FREQ 44100
