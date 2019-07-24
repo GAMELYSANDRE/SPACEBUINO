@@ -23,6 +23,7 @@ class SpaceShip
     void Position(int ChangePosition);
     void Life(int ChangeLife);
 
+    void Reset();
     void Draw ();
     void Move();
 

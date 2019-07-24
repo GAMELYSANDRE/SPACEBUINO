@@ -56,21 +56,48 @@ void loop()
   TimeGame = millis();
   gb.waitForUpdate();
   gb.display.clear();
+
   switch (Mode)
   {
     case -1:
       // play sound
-      if (!isPlaying) playMusic();
+      if (!isPlaying) 
+      {
+        playMusic();
+      }
       MainMenu->DisplayMenu(TimeGame);
-      Mode = MainMenu->MoveText();
+      Mode = MainMenu->Mode();
+      // Save Mode High Scores
+      HighScore->Mode(Mode);
+      SpaceBuino->Reset(); 
+      /*
+      switch (Mode)
+      {
+        case 0:
+          break;
+        case 1:
+          break;
+        case 2:
+          HighScore->Mode(2); 
+          break;    
+      }
+      */
       break;
     case 0:
-      if (isPlaying) stopMusic();
-      HighScore->Display(TimeGame);
-      /*
+      if (isPlaying) 
+      {
+        stopMusic();
+      }
+       /*
+      HighScore->Display(TimeGame, 1020);
+      
+      */
       if (SpaceBuino->GameOver())
       {
-        SaveMenu->DisplaySave(TimeGame);
+        HighScore->Display(TimeGame, 100011);
+        Mode = HighScore->Mode();
+        // reset Mode main menu
+        MainMenu->Mode(-1); 
       }
       else
       {
@@ -78,7 +105,7 @@ void loop()
         {
           SpaceBuino->Start(TimeGame);
           SpaceBuino->Hit(TimeGame);
-          
+
           SpaceBuino->EnemyShot();
           SpaceBuino->VerifyStateSpaceShip();
         }
@@ -87,12 +114,17 @@ void loop()
           SpaceBuino->HomepageLevel();
         }
       }
-      */
       break;
     case 1:
       break;
-
+    case 2:
+      HighScore->Display(TimeGame, 0);
+      Mode = HighScore->Mode();
+      // reset Mode main menu
+      MainMenu->Mode(-1); 
+      break; 
   }
+  //gb.display.print(Mode);
 }
 void playMusic()
 {

@@ -21,6 +21,10 @@ class Game
     bool Play() const;
     bool GameOver() const;
     
+    // setters methods
+    void GameOver(bool ChangeGameOver);
+    
+    void Reset();
     void Start(unsigned long Time);
     void Hit(unsigned long Time);
     void Score();

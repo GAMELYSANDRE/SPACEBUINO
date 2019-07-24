@@ -12,7 +12,12 @@ class Menu
     ~Menu();
     // getters Methods
     int Position() const;
-    int MoveText ();
+    int Mode() const;   // Method for the main menu
+    
+    // setters methods
+    void Mode(int ChangeMode);
+
+   
 
     void DisplayMenu (unsigned long Time);
 
@@ -22,7 +27,8 @@ class Menu
     int* m_MenuTextSize;          // size of the menu texts
     int m_MenuPosition;           // Position in the menu
     int m_MenuPositionPressed;    // Save the position in the menu when pressing the A button  
-    Space *m_Space;               // pointer on the space
+    Space *m_Space;               // pointer on the spa
+    int m_Mode;                   // Variable main menu   
 
     /*--------------------------------------------------------------*/
     /*        variable time management for the flashing Text        */
@@ -43,6 +49,7 @@ class Menu
 
     void DisplayText (int RowText, bool ActivFlashing);
     void DisplayImage (unsigned long Time);
+    void MoveText ();
 };
 
 

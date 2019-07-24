@@ -59,6 +59,15 @@ void SpaceShip::Life(int ChangeLife)
   m_Life = ChangeLife;
 }
 
+void SpaceShip::Reset()
+{
+  m_X = 0;
+  m_Y = 0;
+  m_State = 1; 
+  m_Position = 1;
+  m_Life =2;
+}
+
 //---------------------------------------------------
 //  method that draws the ship following the states
 //---------------------------------------------------

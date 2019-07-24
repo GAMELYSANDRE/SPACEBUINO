@@ -8,7 +8,7 @@
 
 Menu::Menu (const char *MenuTextList[], int MenuSize):
   m_MenuPosition(0),
-  m_MenuPositionPressed(-1),
+  m_Mode(-1),
   m_CurrentTime(0),
   m_StateBreakTime(1),
   m_BreakTimeON(0),
@@ -47,12 +47,26 @@ Menu::~Menu()
   delete[] m_MenuTextList;
   delete m_Space;
 }
-//------------------------------------
-//           Getters functions        
-//------------------------------------
+//----------------------------------------------------------------------
+//           Getters Methods      
+//----------------------------------------------------------------------
 int Menu::Position() const
 {
   return (m_MenuPosition);
+}
+
+int Menu::Mode() const
+{
+   return(m_Mode);
+}
+
+
+//----------------------------------------------------------------------
+//          Setters Methods  
+//----------------------------------------------------------------------
+void Menu::Mode(int ChangeMode)
+{
+  m_Mode = ChangeMode;
 }
 
 void Menu::DisplayText (int RowText, bool ActivFlashing)
@@ -94,9 +108,10 @@ void Menu::DisplayMenu(unsigned long Time)
     m_StateBreakTime = 1;
   }
   DisplayImage(Time);
+  MoveText();
 }
 
-int Menu::MoveText()
+void Menu::MoveText()
 {
   if (gb.buttons.pressed(BUTTON_DOWN))
   {
@@ -125,10 +140,9 @@ int Menu::MoveText()
   }
   if (gb.buttons.pressed(BUTTON_A))
   {
-    m_MenuPositionPressed=m_MenuPosition;
+    m_Mode=m_MenuPosition;
     gb.sound.playTick();
   }
-  return(m_MenuPositionPressed);
 }
 
 
@@ -249,5 +263,4 @@ void Menu::DisplayImage(unsigned long Time)
   {
     m_NumberImage = 0;
   }
-
 }

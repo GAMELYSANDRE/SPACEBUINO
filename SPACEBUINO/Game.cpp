@@ -14,9 +14,9 @@
 
 
 
-//-----------------------------------------
+//----------------------------------------------------------------------
 //              CONSTRUCTOR
-//-----------------------------------------
+//----------------------------------------------------------------------
 Game::Game ():
   m_ShootColumnEnemy(0),
   m_ShootLineEnemy(0),
@@ -66,9 +66,31 @@ Game::~Game()
   delete m_Space;
 }
 
-//-----------------------------------------
+void Game::Reset()
+{
+  m_ShootColumnEnemy = 0;
+  m_ShootLineEnemy = 0;
+  m_CurrentTime = 0;
+  m_StateBreakTimeEnemy = 1;
+  m_BreakTimeEnemy = 0;
+  m_StateBreakTimeSpaceShip = 1;
+  m_BreakTimeSpaceShip = 0;
+  j_Save = 0;
+  i_Save = 0;
+  m_Level = 1;
+  m_PlayerScore = 0;
+  m_Play = 0;
+  m_GameOver = 0;
+  m_AnimateTextGame = -10;
+  m_AnimateTextOver = 70;
+  m_PlayMusic = 0;
+  m_TimePlayMusic = 0;
+  Enterprise->Reset();
+}
+
+//----------------------------------------------------------------------
 //           Getters Methods
-//-----------------------------------------
+//----------------------------------------------------------------------
 bool Game::Play() const
 {
   return (m_Play);
@@ -78,10 +100,17 @@ bool Game::GameOver() const
   return (m_GameOver);
 }
 
+//----------------------------------------------------------------------
+//          Setters Methods  
+//----------------------------------------------------------------------
+void Game::GameOver(bool ChangeGameOver)
+{
+  m_GameOver = ChangeGameOver;
+}
 
-//-----------------------------------------
+//----------------------------------------------------------------------
 //           Main Method
-//-----------------------------------------
+//----------------------------------------------------------------------
 
 void Game::Start(unsigned long Time)
 {
@@ -266,7 +295,9 @@ void Game::Hit(unsigned long Time)
     m_StateBreakTimeEnemy = 1;
   }
 }
-
+//----------------------------------------------------------------------
+//  Method Display Score and Life
+//----------------------------------------------------------------------
 
 void Game::Score()
 {
@@ -279,9 +310,9 @@ void Game::Score()
   gb.display.drawImage(74, 2, IMG_SPACESHIPLIFE);
 }
 
-//---------------------------------------------------------
-//  function that manages the random shooting of enemies
-//---------------------------------------------------------
+//----------------------------------------------------------------------
+//  Method that manages the random shooting of enemies
+//----------------------------------------------------------------------
 
 void Game::EnemyShot()
 {
