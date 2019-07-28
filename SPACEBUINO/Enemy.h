@@ -36,7 +36,7 @@ class Enemy
     void State(bool ChangeState);
     void Direction(bool ChangeDirection);
     void Point(int ChangePoint);
-    void Angry(bool ChangeAngry); 
+    void Angry(bool ChangeAngry);
 
     // movement function
     void Move (int X, int Y);

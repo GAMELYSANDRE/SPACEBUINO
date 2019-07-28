@@ -4,11 +4,11 @@
 /*          Constructors              */
 /*------------------------------------*/
 
-Shoot::Shoot () : m_X(0), m_Y(0),m_Color(8),m_Speed(2), m_State(0)
+Shoot::Shoot () : m_X(0), m_Y(0), m_Color(8), m_Speed(2), m_State(0)
 {
 
 }
-Shoot::Shoot (int Color, int Speed) : m_X(0), m_Y(0),m_Color(8),m_Speed(2), m_State(0)
+Shoot::Shoot (int Color, int Speed) : m_X(0), m_Y(0), m_Color(8), m_Speed(2), m_State(0)
 {
   m_Color = Color;
   m_Speed = Speed;

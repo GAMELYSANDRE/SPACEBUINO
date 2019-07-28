@@ -2,10 +2,10 @@
 #include "EnemyImage.h"
 #include <Gamebuino-Meta.h>
 
-/*-------------------------------------*/
-/*              CONSTRUCTOR            */
-/*-------------------------------------*/
-Enemy::Enemy () : 
+//----------------------------------------------------------------------
+//                         CONSTRUCTOR
+//----------------------------------------------------------------------
+Enemy::Enemy () :
   m_X(0),
   m_Y(0),
   m_State(1),
@@ -17,9 +17,9 @@ Enemy::Enemy () :
 
 
 }
-/*-------------------------------------/
-               DESTRUCTOR
-  /-------------------------------------*/
+//----------------------------------------------------------------------
+//                           DESTRUCTOR
+//----------------------------------------------------------------------
 Enemy::Enemy (int X, int Y, Type TypeEnemy, int Point) :
   m_X(0),
   m_Y(0),
@@ -35,7 +35,7 @@ Enemy::Enemy (int X, int Y, Type TypeEnemy, int Point) :
   m_Point = Point;
 }
 //------------------------------------
-//           Getters Methods        
+//           Getters Methods
 //------------------------------------
 int Enemy::X() const
 {
@@ -66,7 +66,7 @@ Type Enemy::TypeEnemy() const
   return (m_TypeEnemy);
 }
 //----------------------------------------------------------------------
-//          Setters Methods  
+//          Setters Methods
 //----------------------------------------------------------------------
 void Enemy::X(int ChangeX)
 {
@@ -88,13 +88,13 @@ void Enemy::Point(int ChangePoint)
 {
   m_Point = ChangePoint;
 }
-void Enemy::Angry(bool ChangeAngry) 
+void Enemy::Angry(bool ChangeAngry)
 {
   m_Angry = ChangeAngry;
 }
 /*-------------------------------------/
            movement function
-/-------------------------------------*/
+  /-------------------------------------*/
 void Enemy::Move (int X, int Y)
 {
   m_X = X;

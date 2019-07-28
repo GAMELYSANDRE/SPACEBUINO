@@ -14,39 +14,35 @@ class Game
     // Destructor
     ~Game();
     //--------------------------
-    //     Variables Game     
+    //     Variables Game
     //--------------------------
-    
+
     // getters functions
     bool Play() const;
     bool GameOver() const;
-    
+    unsigned int PlayerScore() const;
+
     // setters methods
     void GameOver(bool ChangeGameOver);
-    
+
     void Reset();
     void Start(unsigned long Time);
     void Hit(unsigned long Time);
     void Score();
-    void EnemyShot();
+
     void HomepageLevel();
     void SpaceShipAnimate(unsigned long Time);
-
-    /*-------------------------*/
-    /*   Functions SpaceShip   */
-    /*-------------------------*/
-    void VerifyStateSpaceShip();
 
   private:
 
     //------------------------------------------------------------------
-    //   Variables SpaceShip   
+    //   Variables SpaceShip
     //------------------------------------------------------------------
     SpaceShip *Enterprise;   // pointer on the space ship
     Shoot *m_ShootSpaceShip; // pointer on the shooting of the spaceship
 
     //------------------------------------------------------------------
-    //     Variables Enemy     
+    //     Variables Enemy
     //------------------------------------------------------------------
     Enemy *GridEnemy[4][8];  // pointer on a grid of enemies
     Shoot *m_ShootEnemy;     // pointer on the shooting of the enemy
@@ -55,11 +51,11 @@ class Game
 
 
     //------------------------------------------------------------------
-    //     Variables Game     
+    //     Variables Game
     //------------------------------------------------------------------
 
     // classical variables
-    int m_PlayerScore;
+    unsigned int m_PlayerScore;
     int m_Level;
     bool m_Play;                  // play the game
     bool m_GameOver;              // end the game
@@ -73,34 +69,44 @@ class Game
 
 
     //------------------------------------------------------------------
-    //  variable time management for the animation of the explosion 
+    //  variable time management for the animation of the explosion
     //------------------------------------------------------------------
     unsigned long m_CurrentTime;       // current time
     bool m_StateBreakTimeEnemy;        // active(1) or inactive(0) pause
     unsigned long m_BreakTimeEnemy;    // duration of the break
+    
+    //------------------------------------------------------------------
+    //  variable time management for the animation of the starship
+    //------------------------------------------------------------------
     bool m_StateBreakTimeSpaceShip;    // active(1) or inactive(0) pause
     unsigned long m_BreakTimeSpaceShip;// duration of the break
-    
-    /*--------------------------------------------------------*/
-    /*       save the variable j and i to change state        */
-    /*       of the enemy at the end of the time elapse       */
-    /*--------------------------------------------------------*/
-    int j_Save;                   // j -> first column in the enemy grid
-    int i_Save;                   // i -> Second column in the enemy grid
 
+    //------------------------------------------------------------------
+    //             save the variable j and i to change state        
+    //             of the enemy at the end of the time elapse       
+    //------------------------------------------------------------------
+    int j_Save;                 // j -> first column in the enemy grid
+    int i_Save;                 // i -> Second column in the enemy grid
 
+    //------------------------------------------------------------------
+    //  variable time management coordinated Y of the enemies
+    //------------------------------------------------------------------
+    bool m_StateBreakTimeEnemyY;    // active(1) or inactive(0) pause
+    unsigned long m_BreakTimeEnemyY;// duration of the break
 
-    //---------------------------
-    //     Methods SpaceShip   
-    //---------------------------
+    //------------------------------------------------------------------
+    //     Methods SpaceShip
+    //------------------------------------------------------------------
+    void VerifyStateSpaceShip();
 
-    //---------------------------
-    //       Methods Enemy     
-    //---------------------------
-    void EnemyTableModif();         
-    void MoveEnemy();
+    //------------------------------------------------------------------
+    //       Methods Enemy
+    //------------------------------------------------------------------
+    void EnemyShot();
+    void EnemyTableModif();
+    void EnemyMove(unsigned long Time);
     bool EnemyAllDestroy();
-    
+
     //---------------------------
     //       Methods Game
     //---------------------------

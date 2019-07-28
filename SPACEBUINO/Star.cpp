@@ -4,7 +4,7 @@
 /*-------------------------------------*/
 /*              CONSTRUCTOR            */
 /*-------------------------------------*/
-Star::Star(int X, int Y,int Speed) : m_X(0), m_Y(0), m_Speed(1)
+Star::Star(int X, int Y, int Speed) : m_X(0), m_Y(0), m_Speed(1)
 {
   m_X = X;
   m_Y = Y;

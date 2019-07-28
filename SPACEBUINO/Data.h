@@ -1,6 +1,12 @@
 #ifndef __DataGame__
 #define __DataGame__
 
+#define CRAB_PT  10
+#define SQUID_PT  20
+#define OCTO_PT  40
+#define LAZE_PT  60
+
+
 Type LevelHomepage[5][4] =
 {
   {EMPTY, CRAB, EMPTY, EMPTY},
@@ -43,15 +49,15 @@ Type LevelEnemy[20][8] =
 int LevelEnemyPoint[20][8] =
 {
   //----      LEVEL 1       ----//
-  {10, 10, 10, 10, 10, 10, 10, 10},
-  {10, 10, 10, 10, 10, 10, 10, 10},
-  {10, 10, 10, 10, 10, 10, 10, 10},
-  {10, 10, 10, 10, 10, 10, 10, 10},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
   //----      LEVEL 2       ----//
   {15, 15, 15, 15, 15, 15, 15, 15},
   {10, 10, 10, 10, 10, 10, 10, 10},
-  {10, 10, 10, 10, 10, 10, 10, 10},
-  {10, 10, 10, 10, 10, 10, 10, 10},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
+  {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
   //----      LEVEL 3       ----//
   {15, 15, 15, 15, 15, 15, 15, 15},
   {15, 15, 15, 15, 15, 15, 15, 15},

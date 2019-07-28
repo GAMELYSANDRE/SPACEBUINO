@@ -9,7 +9,7 @@ SpaceShip::SpaceShip () : m_X(0), m_Y(0), m_State(1), m_Position(1), m_Life(2)
 {
 
 }
-SpaceShip::SpaceShip  (int X, int Y ) : m_X(0), m_Y(0), m_State(1), m_Position(1), m_Life(2)
+SpaceShip::SpaceShip  (int X, int Y ) : m_X(0), m_Y(0), m_State(1), m_Position(1), m_Life(3)
 {
   m_X = X;
   m_Y = Y;

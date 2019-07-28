@@ -8,7 +8,7 @@ const uint16_t SPACESHIPData[] =
   6,// Longueur
   6,// Largeur
   4,// nombre d'image
-  3,// nombre image seconde
+  5,// nombre image seconde
   0x0000, // couleur de transparence
   0,
   //----          FIRST PICTURE           ----//

@@ -5,12 +5,12 @@
 
 #define CRAB_PT  10
 #define CRAB_ANGRY_PT  20
-#define SQUID_PT  25
-#define SQUID_ANGRY_PT  35
+#define SQUID_PT  20
+#define SQUID_ANGRY_PT  30
 #define OCTO_PT  40
-#define OCTO_ANGRY_PT  45
-#define LAZE_PT  50
-#define LAZE_ANGRY_PT  55
+#define OCTO_ANGRY_PT  50
+#define LAZE_PT  60
+#define LAZE_ANGRY_PT  80
 
 
 
@@ -25,23 +25,25 @@ Game::Game ():
   m_BreakTimeEnemy(0),
   m_StateBreakTimeSpaceShip(1),
   m_BreakTimeSpaceShip(0),
+  m_StateBreakTimeEnemyY(1),   
+  m_BreakTimeEnemyY(0),
+  m_PlayerScore(0),
+  m_Level(1),
   j_Save(0),
   i_Save(0),
-  m_Level(1),
-  m_PlayerScore(0),
   m_Play(0),
   m_GameOver(0),
   m_AnimateTextGame(-10),
   m_AnimateTextOver(70),
-  m_PlayMusic(0),
+  m_PlayMusic(1),
   m_TimePlayMusic(0)
 {
   // initialize base
   for (int row = 0 ; row < 4 ; row++)
   {
-    for (int i = 0 ; i < 8 ; i++)
+    for (int column = 0 ; column < 8 ; column++)
     {
-      GridEnemy[row][i] = new Enemy(10 + (i * 8), 10 + (row * 8), LAZE, 10);
+      GridEnemy[row][column] = new Enemy(10 + (column * 8), 10 + (row * 8), LAZE, 10);
     }
   }
   m_ShootEnemy = new Shoot(8, 1); // Color and Speed
@@ -50,6 +52,10 @@ Game::Game ():
   m_Space = new Space();
   m_TypeEnemy = new Enemy();
 }
+
+//----------------------------------------------------------------------
+//                           DESTRUCTOR
+//----------------------------------------------------------------------
 
 Game::~Game()
 {
@@ -75,6 +81,8 @@ void Game::Reset()
   m_BreakTimeEnemy = 0;
   m_StateBreakTimeSpaceShip = 1;
   m_BreakTimeSpaceShip = 0;
+  m_StateBreakTimeEnemyY = 1;  
+  m_BreakTimeEnemyY = 0;
   j_Save = 0;
   i_Save = 0;
   m_Level = 1;
@@ -83,7 +91,7 @@ void Game::Reset()
   m_GameOver = 0;
   m_AnimateTextGame = -10;
   m_AnimateTextOver = 70;
-  m_PlayMusic = 0;
+  m_PlayMusic = 1;
   m_TimePlayMusic = 0;
   Enterprise->Reset();
 }
@@ -95,13 +103,18 @@ bool Game::Play() const
 {
   return (m_Play);
 }
+
 bool Game::GameOver() const
 {
   return (m_GameOver);
 }
+unsigned int Game::PlayerScore() const
+{
+  return (m_PlayerScore);
+}
 
 //----------------------------------------------------------------------
-//          Setters Methods  
+//          Setters Methods
 //----------------------------------------------------------------------
 void Game::GameOver(bool ChangeGameOver)
 {
@@ -109,13 +122,14 @@ void Game::GameOver(bool ChangeGameOver)
 }
 
 //----------------------------------------------------------------------
-//           Main Method
+//                          Main Method
 //----------------------------------------------------------------------
 
 void Game::Start(unsigned long Time)
 {
   // animate background
   m_Space->Display();
+  // Shoot spaceship
   if (gb.buttons.pressed(BUTTON_A) and Enterprise->State() == 1 )
   {
     if (m_ShootSpaceShip->State())
@@ -129,12 +143,18 @@ void Game::Start(unsigned long Time)
       gb.sound.play("laser.wav");
     }
   }
-  // affiche 
+  // Display
   Score();
   m_ShootSpaceShip->Move(UP);
-  Enterprise->Move();
+  // disable the movements of the spaceship during the explosion
+  if ( m_CurrentTime > m_BreakTimeSpaceShip )
+  {
+    Enterprise->Move();
+  }
   Enterprise->Draw();
-  MoveEnemy();
+  EnemyMove(Time);
+  EnemyShot();
+  VerifyStateSpaceShip();
   if ( EnemyAllDestroy() == 1 )
   {
     SpaceShipAnimate(Time);
@@ -146,9 +166,9 @@ void Game::Start(unsigned long Time)
   }
 }
 
-//--------------------------------------------
-//  method of modifying the array of enemies
-//--------------------------------------------
+//----------------------------------------------------------------------
+//             Method of modifying the array of enemies
+//----------------------------------------------------------------------
 
 void Game::EnemyTableModif()
 {
@@ -156,6 +176,8 @@ void Game::EnemyTableModif()
   {
     for (int column = 0 ; column < 8 ; column++)
     {
+      GridEnemy[row][column]->X(10 + (column * 8));
+      GridEnemy[row][column]->Y(10 + (row * 8));
       GridEnemy[row][column]->Change(LevelEnemy[row + ((m_Level - 1) * 4)][column]);
       GridEnemy[row][column]->Point(LevelEnemyPoint[row + ((m_Level - 1) * 4)][column]);
       GridEnemy[row][column]->State(1);
@@ -164,9 +186,9 @@ void Game::EnemyTableModif()
   }
 }
 
-//--------------------------------------------------------
-//  method of controlling the destruction of all enemies
-//--------------------------------------------------------
+//----------------------------------------------------------------------
+//        Method of controlling the destruction of all enemies
+//----------------------------------------------------------------------
 
 bool Game::EnemyAllDestroy()
 {
@@ -190,21 +212,23 @@ bool Game::EnemyAllDestroy()
   return (false);
 }
 
-//-----------------------------------------
-// method for the movement of enemies
-//-----------------------------------------
+//----------------------------------------------------------------------
+//               Method for the movement of enemies
+//----------------------------------------------------------------------
 
-void Game::MoveEnemy()
+void Game::EnemyMove(unsigned long Time)
 {
   int PosEnemyLeft = 0;
   int PosEnemyRight = 0;
-  for (int j = 0 ; j < 4 ; j++)
+  int PosEnemyY = 0;
+  // check if the enemies are dead or alive
+  for (int c = 0 ; c < 8 ; c++) // column
   {
-    for (int i = 0 ; i < 8 ; i++)
+    for (int r = 0 ; r < 4 ; r++) // row
     {
-      if (GridEnemy[j][i]->State() == 1)
+      if (GridEnemy[r][c]->State() == 1)
       {
-        PosEnemyLeft = GridEnemy[j][i]->X();
+        PosEnemyLeft = GridEnemy[r][c]->X();
         break;
       }
     }
@@ -213,13 +237,13 @@ void Game::MoveEnemy()
       break;
     }
   }
-  for (int j = 0 ; j < 4 ; j++)
+  for (int c = 7 ; c > -1 ; c--) // column
   {
-    for (int i = 7 ; i > -1 ; i--)
+    for (int r = 0 ; r < 4 ; r++) // row
     {
-      if (GridEnemy[j][i]->State() == 1)
+      if (GridEnemy[r][c]->State() == 1)
       {
-        PosEnemyRight = GridEnemy[j][i]->X();
+        PosEnemyRight = GridEnemy[r][c]->X();
         break;
       }
     }
@@ -229,34 +253,55 @@ void Game::MoveEnemy()
     }
   }
 
-  for (int j = 0 ; j < 4 ; j++)
+  for (int r = 0 ; r < 4 ; r++) // row
   {
-    for (int i = 0 ; i < 8 ; i++)
+    for (int c = 0 ; c < 8 ; c++) // column
     {
-      int PosEnemyX = GridEnemy[j][i]->X();
-      if (GridEnemy[j][i]->Direction() == 0 and PosEnemyLeft >= 2 )
+      int PosEnemyX = GridEnemy[r][c]->X();
+      if (GridEnemy[r][c]->Direction() == 0 and PosEnemyLeft >= 2 )
       {
-        GridEnemy[j][i]->X(PosEnemyX - 1);
+        GridEnemy[r][c]->X(PosEnemyX - 1);
       }
-      if (GridEnemy[j][i]->Direction() == 1 and PosEnemyRight <= 72 )
+      if (GridEnemy[r][c]->Direction() == 1 and PosEnemyRight <= 72 )
       {
-        GridEnemy[j][i]->X(PosEnemyX + 1);
+        GridEnemy[r][c]->X(PosEnemyX + 1);
       }
-      GridEnemy[j][i]->Draw();
-
+      // change the left right direction
       if ( PosEnemyLeft <= 2 )
       {
-        GridEnemy[j][i]->Direction(1);
+        GridEnemy[r][c]->Direction(1);
       }
       if ( PosEnemyRight >= 72 )
       {
-        GridEnemy[j][i]->Direction(0);
+        GridEnemy[r][c]->Direction(0);
       }
-
+      // delay for the descent of the enemies
+      m_CurrentTime = Time;
+      if ( m_StateBreakTimeEnemyY == 1 )
+      {
+        m_BreakTimeEnemyY= m_CurrentTime + 4000;
+        m_StateBreakTimeEnemyY = 0;
+        for (int row = 0 ; row < 4 ; row++)
+        {
+          for (int column = 0 ; column < 8 ; column++)
+          {
+            PosEnemyY = GridEnemy[row][column]->Y();
+            GridEnemy[row][column]->Y(PosEnemyY + 1);
+          }
+        }
+      }
+      if (m_CurrentTime > m_BreakTimeEnemyY and m_StateBreakTimeEnemyY == false)
+      {
+        m_StateBreakTimeEnemyY = 1;
+      }
+      GridEnemy[r][c]->Draw(); 
     }
   }
 }
 
+//----------------------------------------------------------------------
+//        Method check if an enemy is hit and create an explosion
+//----------------------------------------------------------------------
 
 void Game::Hit(unsigned long Time)
 {
@@ -277,7 +322,7 @@ void Game::Hit(unsigned long Time)
           {
             GridEnemy[j][i]->Change(EXPLOSE);
             GridEnemy[j][i]->Draw();
-            m_BreakTimeEnemy = m_CurrentTime + 300;
+            m_BreakTimeEnemy = m_CurrentTime + 500;
             m_StateBreakTimeEnemy = 0;
             m_ShootSpaceShip->State(0);
             m_ShootSpaceShip->Position(0, 0);
@@ -296,7 +341,7 @@ void Game::Hit(unsigned long Time)
   }
 }
 //----------------------------------------------------------------------
-//  Method Display Score and Life
+//                 Method Display Score and Life
 //----------------------------------------------------------------------
 
 void Game::Score()
@@ -304,6 +349,8 @@ void Game::Score()
   gb.display.setCursor(5, 2);
   gb.display.setColor(WHITE);
   gb.display.print(m_PlayerScore);
+
+  gb.display.setColor(WHITE);
   gb.display.setCursor(60, 2);
   gb.display.print(Enterprise->Life());
   gb.display.print(" X");
@@ -311,36 +358,46 @@ void Game::Score()
 }
 
 //----------------------------------------------------------------------
-//  Method that manages the random shooting of enemies
+//         Method that manages the random shooting of enemies
 //----------------------------------------------------------------------
 
 void Game::EnemyShot()
 {
-  // check if the ship is destroyed
+
+  // check if the ship is destroyed and the active shoot
   if (m_ShootEnemy->State() and Enterprise->State() == 1 )
   {
     m_ShootEnemy->Move(DOWN);
   }
+  // new random shot
   else
   {
     m_ShootColumnEnemy = random(0, 8);
-    for (int j = 3 ; j > -1 ; j--)
+    for (int row = 3 ; row > -1 ; row--)
     {
-      m_ShootLineEnemy = j;
-      if (GridEnemy[j][m_ShootColumnEnemy]->State() == 1)
+      m_ShootLineEnemy = row;
+      if (GridEnemy[row][m_ShootColumnEnemy]->State() == 1)
       {
-        m_ShootEnemy->Position(12 + (m_ShootColumnEnemy * 8), 14 + (m_ShootLineEnemy * 8));
+        int PosX = GridEnemy[row][m_ShootColumnEnemy]->X();
+        int PosY = GridEnemy[row][m_ShootColumnEnemy]->Y();
+        int PosXShoot = m_ShootColumnEnemy + PosX;
+        int PosYShoot = m_ShootColumnEnemy + PosY;
+        //m_ShootEnemy->Position(PosXShoot, 14 + (m_ShootLineEnemy * 8));
+        m_ShootEnemy->Position(PosXShoot, PosYShoot);
         m_ShootEnemy->State(1);
-        GridEnemy[j][m_ShootColumnEnemy]->Angry(1);
-        GridEnemy[j][m_ShootColumnEnemy]->Point(CRAB_ANGRY_PT);
+        // modif state enemy and point
+        GridEnemy[row][m_ShootColumnEnemy]->Angry(1);
+        
         // speed and type shoot
-        switch (GridEnemy[j][m_ShootColumnEnemy]->TypeEnemy())
+        switch (GridEnemy[row][m_ShootColumnEnemy]->TypeEnemy())
         {
           case CRAB:
             m_ShootEnemy->Speed(1);
+            GridEnemy[row][m_ShootColumnEnemy]->Point(CRAB_ANGRY_PT);
             break;
           case SQUID:
             m_ShootEnemy->Speed(2);
+            GridEnemy[row][m_ShootColumnEnemy]->Point(SQUID_ANGRY_PT);
             break;
           case OCTO:
 
@@ -356,6 +413,10 @@ void Game::EnemyShot()
 
 }
 
+//----------------------------------------------------------------------
+//             check if the spaceship is hit by a shot
+//----------------------------------------------------------------------
+
 void Game::VerifyStateSpaceShip()
 {
   if  (m_ShootEnemy->X() >= Enterprise->X() and m_ShootEnemy->X() <= (Enterprise->X()) + 6  )
@@ -370,6 +431,7 @@ void Game::VerifyStateSpaceShip()
         m_StateBreakTimeSpaceShip = 0;
         m_ShootEnemy->Position(0, 0);
         Enterprise->Life(Enterprise->Life() - 1);
+        gb.lights.fill(RED);
       }
     }
   }
@@ -377,13 +439,14 @@ void Game::VerifyStateSpaceShip()
   {
     Enterprise->Position(1);
     m_StateBreakTimeSpaceShip = 1;
-
+    // desactive light
+    gb.lights.clear();
   }
 }
 
-//---------------------------------------------
-//         home page levels
-//---------------------------------------------
+//----------------------------------------------------------------------
+//                        Home page levels
+//----------------------------------------------------------------------
 
 void Game::HomepageLevel()
 {
@@ -472,7 +535,6 @@ void Game::HomepageLevel()
           gb.display.print("pt");
           break;
       }
-      //gb.display.print(" pt");
     }
   }
   gb.display.setColor(WHITE);
@@ -481,15 +543,18 @@ void Game::HomepageLevel()
   if (gb.buttons.pressed(BUTTON_A) )
   {
     m_Play = 1;
+    // activate music
+    m_PlayMusic = 1;
+    m_TimePlayMusic = 0;
     EnemyTableModif();
     Enterprise->X(20);
     Enterprise->Y(56);
   }
 }
 
-//----------------------------------------------
-//    ship animation at the end of the level
-//----------------------------------------------
+//----------------------------------------------------------------------
+//                ship animation at the end of the level
+//----------------------------------------------------------------------
 
 void Game::SpaceShipAnimate(unsigned long Time)
 {
@@ -497,14 +562,14 @@ void Game::SpaceShipAnimate(unsigned long Time)
   m_CurrentTime = Time;
   if ( m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip  == 1 )
   {
-    m_BreakTimeSpaceShip  = Time + 15;
+    m_BreakTimeSpaceShip  = Time + 10;
     m_StateBreakTimeSpaceShip  = 0;
   }
   if ( m_CurrentTime > m_BreakTimeSpaceShip  and m_StateBreakTimeSpaceShip  == 0)
   {
-    m_BreakTimeSpaceShip  = Time + 15;
+    m_BreakTimeSpaceShip  = Time + 10;
     m_StateBreakTimeSpaceShip  = 1;
-    Enterprise->Y(Enterprise->Y() - 3);
+    Enterprise->Y(Enterprise->Y() - 2);
   }
   gb.display.setColor(YELLOW);
   gb.display.fillRect(Enterprise->X() + 2, Enterprise->Y(), 2, 100);
@@ -514,15 +579,28 @@ void Game::SpaceShipAnimate(unsigned long Time)
     m_Play = 0;
     m_Level++;
   }
-  gb.sound.play("End1.wav");
+  if ( m_PlayMusic == 1 )
+  {
+    gb.sound.play("End1.wav");
+    if (m_TimePlayMusic == 0)
+    {
+      m_TimePlayMusic  = Time + 700;
+    }
+  }
+  if ( m_CurrentTime > m_TimePlayMusic )
+  {
+    m_PlayMusic = 0;
+  }
 }
 
-//--------------------------
-//    animation game over
-//--------------------------
+//----------------------------------------------------------------------
+//                      animation game over
+//----------------------------------------------------------------------
 
 void Game::GameOverAnimate(unsigned long Time)
 {
+  // desactive light
+  gb.lights.clear();
   m_CurrentTime = Time;
   if ( m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip  == 1 )
   {
@@ -547,7 +625,7 @@ void Game::GameOverAnimate(unsigned long Time)
   gb.lights.drawPixel(0, 2, GREEN);
   gb.lights.drawPixel(1, 2, GREEN);
 
-  if ( m_PlayMusic == 0 )
+  if ( m_PlayMusic == 1 )
   {
 
     gb.sound.play("Game_over.wav");
@@ -558,10 +636,11 @@ void Game::GameOverAnimate(unsigned long Time)
   }
   if ( m_CurrentTime > m_TimePlayMusic )
   {
-    m_PlayMusic = 1;
+    m_PlayMusic = 0;
   }
   if (gb.buttons.pressed(BUTTON_A))
   {
-    m_GameOver=1;
+    m_GameOver = 1;
   }
+  gb.lights.fill(GREEN);
 }
