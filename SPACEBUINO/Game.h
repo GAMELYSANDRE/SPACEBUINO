@@ -27,7 +27,7 @@ class Game
 
     void Reset();
     void Start(unsigned long Time);
-    void Hit(unsigned long Time);
+    
     void Score();
 
     void HomepageLevel();
@@ -48,7 +48,7 @@ class Game
     Shoot *m_ShootEnemy;     // pointer on the shooting of the enemy
     int m_ShootColumnEnemy;  // save the position of the column (0 to 7)
     int m_ShootLineEnemy;    // save the position of the line (0 to 3)
-
+    int m_CountTurn;         // count the number of enemies turn to go down
 
     //------------------------------------------------------------------
     //     Variables Game
@@ -89,12 +89,6 @@ class Game
     int i_Save;                 // i -> Second column in the enemy grid
 
     //------------------------------------------------------------------
-    //  variable time management coordinated Y of the enemies
-    //------------------------------------------------------------------
-    bool m_StateBreakTimeEnemyY;    // active(1) or inactive(0) pause
-    unsigned long m_BreakTimeEnemyY;// duration of the break
-
-    //------------------------------------------------------------------
     //     Methods SpaceShip
     //------------------------------------------------------------------
     void VerifyStateSpaceShip();
@@ -106,6 +100,7 @@ class Game
     void EnemyTableModif();
     void EnemyMove(unsigned long Time);
     bool EnemyAllDestroy();
+    void EnemyExplosion(unsigned long Time);
 
     //---------------------------
     //       Methods Game

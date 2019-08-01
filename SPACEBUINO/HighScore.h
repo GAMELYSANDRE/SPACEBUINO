@@ -40,6 +40,7 @@ class HS
     bool m_SaveScore;             // Save activate = 1 or disable = 0
     int m_Mode;                   // Variable main menu
     Space *m_Space;               // pointer on the space
+    bool m_SwitchHelp;            // swap help
 
     //------------------------------------------------------------------
     //        variable time management for the flashing Image
@@ -57,6 +58,7 @@ class HS
     void Read();
     void ChooseLetter(unsigned int Score);
     void Compare(unsigned int Score);
+    void Help(unsigned long Time);
 };
 
 #endif

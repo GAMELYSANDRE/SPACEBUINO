@@ -137,7 +137,6 @@ void loop()
         if (SpaceBuino->Play())
         {
           SpaceBuino->Start(TimeGame);
-          SpaceBuino->Hit(TimeGame);
         }
         else
         {

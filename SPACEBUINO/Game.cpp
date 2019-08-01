@@ -25,8 +25,6 @@ Game::Game ():
   m_BreakTimeEnemy(0),
   m_StateBreakTimeSpaceShip(1),
   m_BreakTimeSpaceShip(0),
-  m_StateBreakTimeEnemyY(1),   
-  m_BreakTimeEnemyY(0),
   m_PlayerScore(0),
   m_Level(1),
   j_Save(0),
@@ -36,7 +34,8 @@ Game::Game ():
   m_AnimateTextGame(-10),
   m_AnimateTextOver(70),
   m_PlayMusic(1),
-  m_TimePlayMusic(0)
+  m_TimePlayMusic(0),
+  m_CountTurn(0)
 {
   // initialize base
   for (int row = 0 ; row < 4 ; row++)
@@ -81,8 +80,6 @@ void Game::Reset()
   m_BreakTimeEnemy = 0;
   m_StateBreakTimeSpaceShip = 1;
   m_BreakTimeSpaceShip = 0;
-  m_StateBreakTimeEnemyY = 1;  
-  m_BreakTimeEnemyY = 0;
   j_Save = 0;
   i_Save = 0;
   m_Level = 1;
@@ -93,6 +90,7 @@ void Game::Reset()
   m_AnimateTextOver = 70;
   m_PlayMusic = 1;
   m_TimePlayMusic = 0;
+  m_CountTurn = 0;
   Enterprise->Reset();
 }
 
@@ -130,7 +128,7 @@ void Game::Start(unsigned long Time)
   // animate background
   m_Space->Display();
   // Shoot spaceship
-  if (gb.buttons.pressed(BUTTON_A) and Enterprise->State() == 1 )
+  if (gb.buttons.pressed(BUTTON_A) and Enterprise->State() == 1 and m_StateBreakTimeEnemy == 1)
   {
     if (m_ShootSpaceShip->State())
     {
@@ -146,6 +144,7 @@ void Game::Start(unsigned long Time)
   // Display
   Score();
   m_ShootSpaceShip->Move(UP);
+  EnemyExplosion(Time);
   // disable the movements of the spaceship during the explosion
   if ( m_CurrentTime > m_BreakTimeSpaceShip )
   {
@@ -270,17 +269,17 @@ void Game::EnemyMove(unsigned long Time)
       if ( PosEnemyLeft <= 2 )
       {
         GridEnemy[r][c]->Direction(1);
+        m_CountTurn++;
       }
       if ( PosEnemyRight >= 72 )
       {
         GridEnemy[r][c]->Direction(0);
+        m_CountTurn++;
       }
       // delay for the descent of the enemies
       m_CurrentTime = Time;
-      if ( m_StateBreakTimeEnemyY == 1 )
+      if ( m_CountTurn == 500 )
       {
-        m_BreakTimeEnemyY= m_CurrentTime + 4000;
-        m_StateBreakTimeEnemyY = 0;
         for (int row = 0 ; row < 4 ; row++)
         {
           for (int column = 0 ; column < 8 ; column++)
@@ -289,10 +288,7 @@ void Game::EnemyMove(unsigned long Time)
             GridEnemy[row][column]->Y(PosEnemyY + 1);
           }
         }
-      }
-      if (m_CurrentTime > m_BreakTimeEnemyY and m_StateBreakTimeEnemyY == false)
-      {
-        m_StateBreakTimeEnemyY = 1;
+        m_CountTurn = 0;
       }
       GridEnemy[r][c]->Draw(); 
     }
@@ -303,7 +299,7 @@ void Game::EnemyMove(unsigned long Time)
 //        Method check if an enemy is hit and create an explosion
 //----------------------------------------------------------------------
 
-void Game::Hit(unsigned long Time)
+void Game::EnemyExplosion(unsigned long Time)
 {
   m_CurrentTime = Time;
   for (int j = 0 ; j < 4 ; j++)
@@ -322,7 +318,7 @@ void Game::Hit(unsigned long Time)
           {
             GridEnemy[j][i]->Change(EXPLOSE);
             GridEnemy[j][i]->Draw();
-            m_BreakTimeEnemy = m_CurrentTime + 500;
+            m_BreakTimeEnemy = m_CurrentTime + 200;
             m_StateBreakTimeEnemy = 0;
             m_ShootSpaceShip->State(0);
             m_ShootSpaceShip->Position(0, 0);
@@ -560,12 +556,12 @@ void Game::SpaceShipAnimate(unsigned long Time)
 {
   // animate title
   m_CurrentTime = Time;
-  if ( m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip  == 1 )
+  if ( m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip  == 0 )
   {
-    m_BreakTimeSpaceShip  = Time + 10;
+    m_BreakTimeSpaceShip  = m_CurrentTime + 10;
     m_StateBreakTimeSpaceShip  = 0;
   }
-  if ( m_CurrentTime > m_BreakTimeSpaceShip  and m_StateBreakTimeSpaceShip  == 0)
+  if ( m_CurrentTime > m_BreakTimeSpaceShip  and m_StateBreakTimeSpaceShip  == 1)
   {
     m_BreakTimeSpaceShip  = Time + 10;
     m_StateBreakTimeSpaceShip  = 1;

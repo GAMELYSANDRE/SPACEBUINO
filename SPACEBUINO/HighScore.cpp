@@ -17,7 +17,8 @@ HS::HS () :
   m_CurrentTime(0),
   m_StateBreakTimeImage(1),
   m_BreakTimeImage(0),
-  m_NumberImage(0)
+  m_NumberImage(0),
+  m_SwitchHelp(1)
 {
   for (int rang = 0; rang == 5; rang++)
   {
@@ -28,7 +29,7 @@ HS::HS () :
     }
   }
   // test save
-
+/*
     int test=0;
     gb.save.set(0,test);
     gb.save.set(1,test);
@@ -43,7 +44,7 @@ HS::HS () :
     gb.save.set(7,"---");
     gb.save.set(8,"---");
     gb.save.set(9,"---");
-
+*/
   m_Space = new Space();
 }
 
@@ -126,6 +127,7 @@ void HS::Display(unsigned long Time, unsigned int Score)
       // SCORE
       gb.display.setCursor(51, 24 + (row * 6));
       gb.display.print(m_Score[row]);
+
     }
     else
     {
@@ -138,7 +140,53 @@ void HS::Display(unsigned long Time, unsigned int Score)
       gb.display.print(Score);
     }
   }
+  // HELP
+  gb.display.setColor(YELLOW);
+  gb.display.setCursor(4, 56);
+  gb.display.print("HELP : BUTTON MENU");
+  if (gb.buttons.pressed(BUTTON_MENU) )
+  {
+    m_SwitchHelp = 0;
+    gb.sound.playTick();
+  }
+  if (!m_SwitchHelp)
+  {
+    Help(Time);
+  }
+}
 
+void HS::Help(unsigned long Time)
+{
+  gb.display.clear();
+  // animate background
+  m_Space->Display();
+  // display title
+  Title(Time);
+  gb.display.setColor(DARKBLUE);
+  gb.display.drawImage(2,18, IMG_CROSS_UP);
+  gb.display.setCursor(15, 20);
+  gb.display.println("A B C.");
+  gb.display.drawImage(40,18, IMG_CROSS_DOWN);
+  gb.display.setCursor(53, 20);
+  gb.display.println("A Z Y.");
+  gb.display.drawImage(2,30, IMG_CROSS_RIGHT);
+  gb.display.setCursor(15, 32);
+  gb.display.println("advance one box");
+  gb.display.drawImage(2,42, IMG_CROSS_LEFT);
+  gb.display.setCursor(15, 44);
+  gb.display.println("back one box");
+  gb.display.drawImage(2,54, IMG_BTN_A);
+  gb.display.setCursor(15, 56);
+  gb.display.println("Reset");
+  gb.display.drawImage(40,54, IMG_BTN_B);
+  gb.display.setCursor(53, 56);
+  gb.display.println("Save");
+    
+  if (gb.buttons.released(BUTTON_MENU) )
+  {
+    m_SwitchHelp = 1;
+    gb.sound.playTick();
+  }
 }
 
 void HS::Title(unsigned long Time)
