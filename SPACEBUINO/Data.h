@@ -6,47 +6,69 @@
 #define OCTO_PT  40
 #define LAZE_PT  60
 
-
-Type LevelHomepage[5][4] =
+Type LevelHomepage[9][4] =
 {
-  {EMPTY, CRAB, EMPTY, EMPTY},
-  {EMPTY, CRAB, SQUID, EMPTY},
-  {EMPTY, CRAB, SQUID, EMPTY},
-  {EMPTY, CRAB, SQUID, EMPTY},
-  {EMPTY, CRAB, SQUID, EMPTY}
+  {EMPTY, CRAB, EMPTY, EMPTY}, // Level 1
+  {EMPTY, CRAB, SQUID, EMPTY}, // Level 2
+  {EMPTY, CRAB, SQUID, EMPTY}, // Level 3
+  {EMPTY, CRAB, SQUID, EMPTY}, // Level 4
+  {EMPTY, SQUID, EMPTY, EMPTY}, // Level 5
+  {EMPTY, OCTO, SQUID, EMPTY}, // Level 6
+  {EMPTY, OCTO, SQUID, EMPTY}, // Level 7
+  {EMPTY, OCTO, SQUID, EMPTY}, // Level 8
+  {EMPTY, OCTO, SQUID, EMPTY}, // Level 9
 };
 
-Type LevelEnemy[20][8] =
+Type LevelEnemy[36][8] =
 {
   //----              LEVEL 1               ----//
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
-  //----              LEVEL 2               ----//
+  //----              LEVEL 2                       ----//
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
-  //----              LEVEL 3               ----//
+  //----              LEVEL 3                       ----//
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
-  //----              LEVEL 4               ----//
+  //----              LEVEL 4                       ----//
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB, CRAB},
-  //----              LEVEL 5               ----//
+  //----              LEVEL 5                       ----//
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
   {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
-  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID}
-
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  //----              LEVEL 6                       ----//
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  //----              LEVEL 7                       ----//
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  //----              LEVEL 8                       ----//
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID, SQUID},
+  //----          LEVEL 9                   ----//
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO},
+  {OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO, OCTO}
 };
 
-int LevelEnemyPoint[20][8] =
+int LevelEnemyPoint[36][8] =
 {
   //----      LEVEL 1       ----//
   {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
@@ -68,10 +90,30 @@ int LevelEnemyPoint[20][8] =
   {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
   {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
   {CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT, CRAB_PT},
-  //----      LEVEL 5       ----//
+  //----                           LEVEL 5                                   ----//
   {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
   {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
   {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
-  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT}
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  //----                           LEVEL 6                                   ----//
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  //----                           LEVEL 7                                   ----//
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  //----                           LEVEL 8                                   ----//
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT, SQUID_PT},
+  //----                        LEVEL 9                             ----//
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT},
+  {OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT, OCTO_PT}
 };
 #endif

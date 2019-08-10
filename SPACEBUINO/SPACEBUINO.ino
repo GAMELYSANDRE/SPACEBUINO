@@ -25,6 +25,7 @@
 #include "Menu.h"
 #include "HighScore.h"
 #include "Space.h"
+#include "Level.h"
 
 const uint16_t LOGO_Data[] =
 {
@@ -74,6 +75,7 @@ void stopMusic();
 Game *SpaceBuino;
 Menu *MainMenu;
 HS *HighScore;
+Level *LevelMenu;
 Space StarLogo;
 
 const char *MainMenuText[] =
@@ -92,7 +94,8 @@ void setup()
   SpaceBuino = new Game;
   MainMenu = new Menu(MainMenuText, 4);
   HighScore = new HS();
-  
+  LevelMenu = new Level();
+
 }
 
 
@@ -145,6 +148,7 @@ void loop()
       }
       break;
     case 1:
+      LevelMenu->Display(TimeGame);
       break;
     case 2:
       HighScore->Display(TimeGame, 0);
@@ -170,7 +174,6 @@ void loop()
       }
       break;
   }
-  //gb.display.print(Mode);
 }
 void playMusic()
 {

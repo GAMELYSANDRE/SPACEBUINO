@@ -3,6 +3,7 @@
 #include "Data.h"
 #include <Gamebuino-Meta.h>
 
+// Point of the enemies
 #define CRAB_PT  10
 #define CRAB_ANGRY_PT  20
 #define SQUID_PT  20
@@ -12,7 +13,8 @@
 #define LAZE_PT  60
 #define LAZE_ANGRY_PT  80
 
-
+// game configuration variable
+#define SPEED_DESCENT_ENEMIES 600
 
 //----------------------------------------------------------------------
 //              CONSTRUCTOR
@@ -45,9 +47,9 @@ Game::Game ():
       GridEnemy[row][column] = new Enemy(10 + (column * 8), 10 + (row * 8), LAZE, 10);
     }
   }
-  m_ShootEnemy = new Shoot(8, 1); // Color and Speed
+  m_ShootEnemy = new Shoot(8, 1); // Color RED and Speed
   Enterprise = new SpaceShip(20, 56); // X and Y
-  m_ShootSpaceShip = new Shoot(10, 3); // Color and Speed
+  m_ShootSpaceShip = new Shoot(10, 3); // Color YELLOW and Speed
   m_Space = new Space();
   m_TypeEnemy = new Enemy();
 }
@@ -178,9 +180,22 @@ void Game::EnemyTableModif()
       GridEnemy[row][column]->X(10 + (column * 8));
       GridEnemy[row][column]->Y(10 + (row * 8));
       GridEnemy[row][column]->Change(LevelEnemy[row + ((m_Level - 1) * 4)][column]);
+      GridEnemy[row][column]->HitChange(LevelEnemy[row + ((m_Level - 1) * 4)][column]);
       GridEnemy[row][column]->Point(LevelEnemyPoint[row + ((m_Level - 1) * 4)][column]);
       GridEnemy[row][column]->State(1);
       GridEnemy[row][column]->Angry(0);
+      switch (GridEnemy[row][column]->TypeEnemy())
+      {
+        case CRAB:
+          GridEnemy[row][column]->Resistance(1);
+          break;
+        case SQUID:
+          GridEnemy[row][column]->Resistance(2);
+          break;
+        case OCTO:
+          GridEnemy[row][column]->Resistance(3);
+          break;  
+      }
     }
   }
 }
@@ -278,7 +293,7 @@ void Game::EnemyMove(unsigned long Time)
       }
       // delay for the descent of the enemies
       m_CurrentTime = Time;
-      if ( m_CountTurn == 500 )
+      if ( m_CountTurn == SPEED_DESCENT_ENEMIES )
       {
         for (int row = 0 ; row < 4 ; row++)
         {
@@ -290,13 +305,13 @@ void Game::EnemyMove(unsigned long Time)
         }
         m_CountTurn = 0;
       }
-      GridEnemy[r][c]->Draw(); 
+      GridEnemy[r][c]->Draw();
     }
   }
 }
 
 //----------------------------------------------------------------------
-//        Method check if an enemy is hit and create an explosion
+// Method check if an enemy is hit and create an explosion or to touch
 //----------------------------------------------------------------------
 
 void Game::EnemyExplosion(unsigned long Time)
@@ -312,11 +327,25 @@ void Game::EnemyExplosion(unsigned long Time)
         and m_ShootSpaceShip->X() <= (GridEnemy[j][i]->X()) + 6
       )
       {
-        if (m_ShootSpaceShip->Y() <= (GridEnemy[j][i]->Y()) + 6 and m_ShootSpaceShip->Y() >= GridEnemy[j][i]->Y())
+        if
+        (
+          m_ShootSpaceShip->Y() <= (GridEnemy[j][i]->Y()) + 6
+          and m_ShootSpaceShip->Y() >= GridEnemy[j][i]->Y()
+        )
         {
           if ( m_StateBreakTimeEnemy == 1 and GridEnemy[j][i]->State() == 1 )
           {
-            GridEnemy[j][i]->Change(EXPLOSE);
+            int Resistance = GridEnemy[j][i]->Resistance();
+            Resistance--;
+            GridEnemy[j][i]->Resistance(Resistance);
+            if ( Resistance == 0 )
+            {
+              GridEnemy[j][i]->Change(EXPLOSE);
+            }
+            else
+            {
+              GridEnemy[j][i]->Change(HIT);
+            }
             GridEnemy[j][i]->Draw();
             m_BreakTimeEnemy = m_CurrentTime + 200;
             m_StateBreakTimeEnemy = 0;
@@ -332,7 +361,14 @@ void Game::EnemyExplosion(unsigned long Time)
   }
   if (m_CurrentTime > m_BreakTimeEnemy and m_StateBreakTimeEnemy == false)
   {
-    GridEnemy[j_Save][i_Save]->State(0);
+    if ( GridEnemy[j_Save][i_Save]->Resistance() == 0 )
+    {
+      GridEnemy[j_Save][i_Save]->State(0);
+    }
+    else
+    {
+      GridEnemy[j_Save][i_Save]->Change(LevelEnemy[j_Save + ((m_Level - 1) * 4)][i_Save]);
+    }
     m_StateBreakTimeEnemy = 1;
   }
 }
@@ -383,7 +419,7 @@ void Game::EnemyShot()
         m_ShootEnemy->State(1);
         // modif state enemy and point
         GridEnemy[row][m_ShootColumnEnemy]->Angry(1);
-        
+
         // speed and type shoot
         switch (GridEnemy[row][m_ShootColumnEnemy]->TypeEnemy())
         {
@@ -392,11 +428,12 @@ void Game::EnemyShot()
             GridEnemy[row][m_ShootColumnEnemy]->Point(CRAB_ANGRY_PT);
             break;
           case SQUID:
-            m_ShootEnemy->Speed(2);
+            m_ShootEnemy->Speed(1);
             GridEnemy[row][m_ShootColumnEnemy]->Point(SQUID_ANGRY_PT);
             break;
           case OCTO:
-
+            m_ShootEnemy->Speed(2);
+            GridEnemy[row][m_ShootColumnEnemy]->Point(SQUID_ANGRY_PT);
             break;
           case LAZE:
 
@@ -446,8 +483,6 @@ void Game::VerifyStateSpaceShip()
 
 void Game::HomepageLevel()
 {
-  // Voice level
-  //gb.sound.play("level_1.WAV", true);
   // desactive light
   gb.lights.clear();
   // animate background
@@ -554,7 +589,6 @@ void Game::HomepageLevel()
 
 void Game::SpaceShipAnimate(unsigned long Time)
 {
-  // animate title
   m_CurrentTime = Time;
   if ( m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip  == 0 )
   {

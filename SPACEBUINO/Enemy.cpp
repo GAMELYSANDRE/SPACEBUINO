@@ -9,6 +9,7 @@ Enemy::Enemy () :
   m_X(0),
   m_Y(0),
   m_State(1),
+  m_Resistance(1),
   m_TypeEnemy(SQUID),
   m_Direction(0),
   m_Point(0),
@@ -17,13 +18,12 @@ Enemy::Enemy () :
 
 
 }
-//----------------------------------------------------------------------
-//                           DESTRUCTOR
-//----------------------------------------------------------------------
+
 Enemy::Enemy (int X, int Y, Type TypeEnemy, int Point) :
   m_X(0),
   m_Y(0),
   m_State(1),
+  m_Resistance(1),
   m_TypeEnemy(SQUID),
   m_Direction(0),
   m_Point(0),
@@ -33,7 +33,13 @@ Enemy::Enemy (int X, int Y, Type TypeEnemy, int Point) :
   m_Y = Y;
   m_TypeEnemy = TypeEnemy;
   m_Point = Point;
+  m_TypeEnemyHit = TypeEnemy;
 }
+//----------------------------------------------------------------------
+//                           DESTRUCTOR
+//----------------------------------------------------------------------
+
+
 //------------------------------------
 //           Getters Methods
 //------------------------------------
@@ -48,6 +54,10 @@ int Enemy::Y() const
 bool Enemy::State() const
 {
   return (m_State);
+}
+int Enemy::Resistance() const
+{
+  return (m_Resistance);
 }
 bool Enemy::Direction() const
 {
@@ -80,6 +90,10 @@ void Enemy::State(bool ChangeState)
 {
   m_State = ChangeState;
 }
+void Enemy::Resistance(int ChangeResistance)
+{
+  m_Resistance = ChangeResistance;
+}
 void Enemy::Direction(bool ChangeDirection)
 {
   m_Direction = ChangeDirection;
@@ -92,6 +106,14 @@ void Enemy::Angry(bool ChangeAngry)
 {
   m_Angry = ChangeAngry;
 }
+void Enemy::Change (Type TypeEnemy)
+{
+  m_TypeEnemy = TypeEnemy;
+}
+void Enemy::HitChange (Type ChangeType)
+{
+  m_TypeEnemyHit = ChangeType;
+}
 /*-------------------------------------/
            movement function
   /-------------------------------------*/
@@ -100,11 +122,12 @@ void Enemy::Move (int X, int Y)
   m_X = X;
   m_Y = Y;
 }
-/*-------------------------------------/
-             Drawing function
-  /-------------------------------------*/
-void Enemy::Draw() const
+//----------------------------------------------------------------------
+//             Drawing function
+//----------------------------------------------------------------------
+void Enemy::Draw()
 {
+  // not angry enemy
   if (m_State == 1 and m_Angry == 0) // check dead (0) or alive (1) and not angry (0)
   {
     switch (m_TypeEnemy)
@@ -125,8 +148,23 @@ void Enemy::Draw() const
         gb.display.drawImage(m_X, m_Y, IMG_EXPLOSE);
         gb.sound.play("explosion_1.wav");
         break;
+      case (HIT):
+        switch (m_TypeEnemyHit)
+        {
+          case (CRAB):
+            break;
+          case (SQUID):
+            gb.display.drawImage(m_X, m_Y, IMG_SQUID_HIT);
+            break;
+          case (OCTO):
+            gb.display.drawImage(m_X, m_Y, IMG_OCTO_HIT);
+            break;  
+        }
+        gb.sound.play("Beep1.wav");
+        break;
     }
   }
+  // Angry enemy
   if (m_State == 1 and m_Angry == 1) // check dead (0) or alive (1) and angry (1)
   {
     switch (m_TypeEnemy)
@@ -138,7 +176,7 @@ void Enemy::Draw() const
         gb.display.drawImage(m_X, m_Y, IMG_SQUID_RED);
         break;
       case (OCTO):
-        gb.display.drawImage(m_X, m_Y, IMG_OCTOPUS);
+        gb.display.drawImage(m_X, m_Y, IMG_OCTO_RED);
         break;
       case (LAZE):
         gb.display.drawImage(m_X, m_Y, IMG_LAZE);
@@ -147,13 +185,20 @@ void Enemy::Draw() const
         gb.display.drawImage(m_X, m_Y, IMG_EXPLOSE);
         gb.sound.play("explosion_1.wav");
         break;
+      case (HIT):
+        switch (m_TypeEnemyHit)
+        {
+          case (CRAB):
+            break;
+          case (SQUID):
+            gb.display.drawImage(m_X, m_Y, IMG_SQUID_HIT);
+            break;
+          case (OCTO):
+            gb.display.drawImage(m_X, m_Y, IMG_OCTO_HIT);
+            break;   
+        }
+        gb.sound.play("Beep1.wav");
+        break;
     }
   }
-}
-/*-------------------------------------/
-   function changes the type of enemy
-  /-------------------------------------*/
-void Enemy::Change (Type TypeEnemy)
-{
-  m_TypeEnemy = TypeEnemy;
 }
