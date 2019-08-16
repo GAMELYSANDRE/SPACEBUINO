@@ -3,13 +3,16 @@
 
 #include <Gamebuino-Meta.h>
 
+#define PosX 25
+#define PosXArrow 35
+
 //----------------------------------------------------------------------
 //              CONSTRUCTOR
 //----------------------------------------------------------------------
 Level::Level () :
   m_Level(1),
-  m_LevelSave(0),
   m_Direction(1),
+  m_Mode(1),
   m_CurrentTime(0),
   m_StateBreakTimeImage(1),
   m_BreakTimeImage(0),
@@ -30,6 +33,24 @@ Level::~Level()
 {
   delete m_Space;
 }
+
+//----------------------------------------------------------------------
+//           Getters functions
+//----------------------------------------------------------------------
+
+int Level::Mode()
+{
+  return (m_Mode);
+}
+
+//----------------------------------------------------------------------
+//          Setters Methods
+//----------------------------------------------------------------------
+void Level::Mode(int ChangeMode)
+{
+  m_Mode = ChangeMode;
+}
+
 
 void Level::Display(unsigned long Time)
 {
@@ -104,15 +125,35 @@ void Level::Title(unsigned long Time)
 
 void Level::SelectLevel(unsigned long Time)
 {
+  // reads the level backup
+  m_LevelSave = gb.save.get(10);
   gb.display.setColor(150, 150, 150);
-  gb.display.setCursor(25, 54);
+  gb.display.setCursor(27, 18);
   gb.display.print("LEVEL ");
   gb.display.print(m_Level);
-  if (gb.buttons.pressed(BUTTON_RIGHT))
+  gb.display.setCursor(52, 59);
+  gb.display.print("EXIT: B");
+  // Validate level
+  if (gb.buttons.pressed(BUTTON_A))
   {
-    m_Direction = 1;
-    m_Animate = 1;
+    m_Mode = 0;
     gb.sound.playOK();
+  }
+  // EXIT
+  if (gb.buttons.pressed(BUTTON_B))
+  {
+    m_Mode = -1;
+    gb.sound.playOK();
+  }
+  // CHOOSE LEVEL
+  if (m_Level < 8 )
+  {
+    if (gb.buttons.pressed(BUTTON_RIGHT))
+    {
+      m_Direction = 1;
+      m_Animate = 1;
+      gb.sound.playOK();
+    }
   }
   if (m_Level > 1)
   {
@@ -129,16 +170,27 @@ void Level::SelectLevel(unsigned long Time)
   }
   else
   {
-    gb.display.drawImage(25, 20, IMG_LEVEL, 0, (m_Level-1)*30, 30, 30);
-    // Display Arrow Left and Right
-    if (m_Level == 1)
+    if (m_Level <= m_LevelSave )
     {
-      gb.display.drawImage(60, 30, IMG_ARROW_RIGHT);
+      gb.display.drawImage(25, PosX, IMG_LEVEL, 0, (m_Level - 1) * 30, 30, 30);
     }
     else
     {
-      gb.display.drawImage(10, 30, IMG_ARROW_LEFT);
-      gb.display.drawImage(60, 30, IMG_ARROW_RIGHT);
+      gb.display.drawImage(25, PosX, IMG_LEVEL_BW, 0, (m_Level - 1) * 30, 30, 30);
+    }
+    // Display Arrow Left and Right
+    if (m_Level == 1)
+    {
+      gb.display.drawImage(60, PosXArrow, IMG_ARROW_RIGHT);
+    }
+    else if ( m_Level == 8 )
+    {
+      gb.display.drawImage(10, PosXArrow, IMG_ARROW_LEFT);
+    }
+    else
+    {
+      gb.display.drawImage(10, PosXArrow, IMG_ARROW_LEFT);
+      gb.display.drawImage(60, PosXArrow, IMG_ARROW_RIGHT);
     }
   }
 }
@@ -165,14 +217,36 @@ void Level::Animate(unsigned long Time)
       m_MoveX = m_MoveX + 2;
     }
   }
-  gb.display.drawImage(m_MoveX, 20, IMG_LEVEL, 0, (m_Level-1)*30, 30, 30);
-  if ( m_Direction == true )
+  if (m_Level <= m_LevelSave )
   {
-    gb.display.drawImage(m_MoveX + 58, 20, IMG_LEVEL, 0, m_Level*30, 30, 30);
+    gb.display.drawImage(m_MoveX, PosX, IMG_LEVEL, 0, (m_Level - 1) * 30, 30, 30);
   }
   else
   {
-    gb.display.drawImage(m_MoveX - 68, 20, IMG_LEVEL, 0, (m_Level-2)*30, 30, 30);
+    gb.display.drawImage(m_MoveX, PosX, IMG_LEVEL_BW, 0, (m_Level - 1) * 30, 30, 30);
+  }
+
+  if ( m_Direction == true )
+  {
+    if (m_Level >= m_LevelSave )
+    {
+      gb.display.drawImage(m_MoveX + 58, PosX, IMG_LEVEL_BW, 0, m_Level * 30, 30, 30);
+    }
+    else
+    {
+      gb.display.drawImage(m_MoveX + 58, PosX, IMG_LEVEL, 0, m_Level * 30, 30, 30);
+    }
+  }
+  else
+  {
+    if (m_Level - 2 >= m_LevelSave )
+    {
+      gb.display.drawImage(m_MoveX - 68, PosX, IMG_LEVEL_BW, 0, (m_Level - 2) * 30, 30, 30);
+    }
+    else
+    {
+      gb.display.drawImage(m_MoveX - 68, PosX, IMG_LEVEL, 0, (m_Level - 2) * 30, 30, 30);
+    }
   }
   // end animate
   if ( m_MoveX < -30 or m_MoveX > 90)

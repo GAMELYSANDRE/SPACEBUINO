@@ -11,6 +11,12 @@ class Level
     // destructor
     ~Level();
 
+    // getters Methods
+    int Mode();   // Method for the main menu
+
+    // setters methods
+    void Mode(int ChangeMode);
+    
     //------------------------------------------------------------------
     //                 Methods
     //------------------------------------------------------------------    
@@ -25,7 +31,8 @@ class Level
     int m_Level;
     int m_LevelSave;              // Save level
     bool m_Direction;             // Direction animate Right(1) Left(0)
-    
+    int m_Mode;                   // Variable main menu
+        
     //------------------------------------------------------------------
     //        variable time management for the flashing Image
     //------------------------------------------------------------------

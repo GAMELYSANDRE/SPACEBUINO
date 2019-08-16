@@ -85,6 +85,11 @@ const char *MainMenuText[] =
   "HIGH SCORES",
   "CREDITS"
 };
+# define MENU -1
+# define PLAY 0
+# define LEVEL 1
+# define HIGHSCORES 2
+# define CREDITS 3
 
 void setup()
 {
@@ -95,7 +100,7 @@ void setup()
   MainMenu = new Menu(MainMenuText, 4);
   HighScore = new HS();
   LevelMenu = new Level();
-
+   
 }
 
 
@@ -104,10 +109,16 @@ void loop()
   TimeGame = millis();
   gb.waitForUpdate();
   gb.display.clear();
-
+  // standardizes the Mode variable in all classes
+  MainMenu->Mode(Mode);
+  LevelMenu->Mode(Mode);
+  HighScore->Mode(Mode); 
   switch (Mode)
   {
-    case -1:
+    //----------------------------------------------------------------------
+    //                            MAIN MENU
+    //----------------------------------------------------------------------
+    case MENU :
       // play sound
       if (!isPlaying)
       {
@@ -115,11 +126,12 @@ void loop()
       }
       MainMenu->DisplayMenu(TimeGame);
       Mode = MainMenu->Mode();
-      // Save Mode High Scores
-      HighScore->Mode(Mode);
       SpaceBuino->Reset();
       break;
-    case 0:
+    //----------------------------------------------------------------------
+    //                            PLAY
+    //----------------------------------------------------------------------      
+    case PLAY :
       if (SpaceBuino->GameOver())
       {
         if (!isPlaying)
@@ -128,8 +140,6 @@ void loop()
         }
         HighScore->Display(TimeGame, SpaceBuino->PlayerScore());
         Mode = HighScore->Mode();
-        // reset Mode main menu
-        MainMenu->Mode(-1);
       }
       else
       {
@@ -147,16 +157,25 @@ void loop()
         }
       }
       break;
-    case 1:
+    //----------------------------------------------------------------------
+    //                            LEVEL
+    //---------------------------------------------------------------------- 
+    case LEVEL :
       LevelMenu->Display(TimeGame);
+      Mode =LevelMenu->Mode();
+      SpaceBuino->Level(4);
       break;
-    case 2:
+    //----------------------------------------------------------------------
+    //                            HIGHSCORES
+    //----------------------------------------------------------------------  
+    case HIGHSCORES :
       HighScore->Display(TimeGame, 0);
       Mode = HighScore->Mode();
-      // reset Mode main menu
-      MainMenu->Mode(-1);
       break;
-    case 3:
+    //----------------------------------------------------------------------
+    //                            CREDITS
+    //----------------------------------------------------------------------  
+    case CREDITS:
       StarLogo.Display();
       gb.lights.clear();
       gb.display.drawImage(20, 0, IMG_LOGO);
@@ -170,11 +189,13 @@ void loop()
       if (gb.buttons.pressed(BUTTON_A))
       {
         Mode = -1;
-        MainMenu->Mode(-1);
       }
       break;
   }
+
 }
+
+
 void playMusic()
 {
   Music = gb.sound.play("Space.WAV", true);

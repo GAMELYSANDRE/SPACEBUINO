@@ -13,9 +13,9 @@ class Game
     Game ();
     // Destructor
     ~Game();
-    //--------------------------
+    //------------------------------------------------------------------
     //     Variables Game
-    //--------------------------
+    //------------------------------------------------------------------
 
     // getters functions
     bool Play() const;
@@ -23,6 +23,7 @@ class Game
     unsigned int PlayerScore() const;
 
     // setters methods
+    void Level(int ChangeLevel);
     void GameOver(bool ChangeGameOver);
 
     void Reset();

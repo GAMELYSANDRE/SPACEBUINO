@@ -120,6 +120,11 @@ void Game::GameOver(bool ChangeGameOver)
 {
   m_GameOver = ChangeGameOver;
 }
+void Game::Level(int ChangeLevel)
+{
+  m_Level = ChangeLevel;
+}
+
 
 //----------------------------------------------------------------------
 //                          Main Method
@@ -164,6 +169,7 @@ void Game::Start(unsigned long Time)
   {
     Enterprise->State(0);
     GameOverAnimate(Time);
+    gb.save.set(10,m_Level);
   }
 }
 
