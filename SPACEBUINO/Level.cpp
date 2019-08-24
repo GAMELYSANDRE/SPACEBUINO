@@ -35,12 +35,17 @@ Level::~Level()
 }
 
 //----------------------------------------------------------------------
-//           Getters functions
+//           Getters Methods
 //----------------------------------------------------------------------
 
 int Level::Mode()
 {
   return (m_Mode);
+}
+
+int Level::LevelGame()
+{
+  return (m_Level);
 }
 
 //----------------------------------------------------------------------
@@ -136,7 +141,10 @@ void Level::SelectLevel(unsigned long Time)
   // Validate level
   if (gb.buttons.pressed(BUTTON_A))
   {
-    m_Mode = 0;
+    if ( m_Level <= m_LevelSave )
+    {
+      m_Mode = 0;
+    }
     gb.sound.playOK();
   }
   // EXIT
@@ -146,7 +154,7 @@ void Level::SelectLevel(unsigned long Time)
     gb.sound.playOK();
   }
   // CHOOSE LEVEL
-  if (m_Level < 8 )
+  if (m_Level < 20 )
   {
     if (gb.buttons.pressed(BUTTON_RIGHT))
     {
@@ -183,7 +191,7 @@ void Level::SelectLevel(unsigned long Time)
     {
       gb.display.drawImage(60, PosXArrow, IMG_ARROW_RIGHT);
     }
-    else if ( m_Level == 8 )
+    else if ( m_Level == 20 )
     {
       gb.display.drawImage(10, PosXArrow, IMG_ARROW_LEFT);
     }
@@ -210,11 +218,11 @@ void Level::Animate(unsigned long Time)
     // Speed Movement
     if ( m_Direction == true )
     {
-      m_MoveX = m_MoveX - 2;
+      m_MoveX = m_MoveX - 3;
     }
     else
     {
-      m_MoveX = m_MoveX + 2;
+      m_MoveX = m_MoveX + 3;
     }
   }
   if (m_Level <= m_LevelSave )

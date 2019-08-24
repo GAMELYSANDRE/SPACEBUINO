@@ -169,7 +169,12 @@ void Game::Start(unsigned long Time)
   {
     Enterprise->State(0);
     GameOverAnimate(Time);
-    gb.save.set(10,m_Level);
+    // Saves progress levels
+    int LevelSave = gb.save.get(10);
+    if( m_Level > LevelSave )
+    { 
+      gb.save.set(10,m_Level);
+    }
   }
 }
 
@@ -200,7 +205,10 @@ void Game::EnemyTableModif()
           break;
         case OCTO:
           GridEnemy[row][column]->Resistance(3);
-          break;  
+          break;
+        case LAZE:
+          GridEnemy[row][column]->Resistance(4);
+          break;            
       }
     }
   }
@@ -442,7 +450,8 @@ void Game::EnemyShot()
             GridEnemy[row][m_ShootColumnEnemy]->Point(SQUID_ANGRY_PT);
             break;
           case LAZE:
-
+            m_ShootEnemy->Speed(3);
+            GridEnemy[row][m_ShootColumnEnemy]->Point(LAZE_ANGRY_PT);
             break;
         }
         break;
@@ -468,7 +477,7 @@ void Game::VerifyStateSpaceShip()
       {
         m_BreakTimeSpaceShip = m_CurrentTime + 500;
         m_StateBreakTimeSpaceShip = 0;
-        m_ShootEnemy->Position(0, 0);
+        EnemyShot();
         Enterprise->Life(Enterprise->Life() - 1);
         gb.lights.fill(RED);
       }
@@ -653,7 +662,7 @@ void Game::GameOverAnimate(unsigned long Time)
   }
   if ( m_CurrentTime > m_BreakTimeSpaceShip  and m_StateBreakTimeSpaceShip  == 0)
   {
-    m_BreakTimeSpaceShip  = Time + 5;
+    m_BreakTimeSpaceShip  = Time + 20;
     m_StateBreakTimeSpaceShip  = 1;
   }
   gb.display.drawImage(18, m_AnimateTextGame, IMG_GAME);

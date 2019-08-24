@@ -8,7 +8,7 @@ enum Type
   CRAB = 1,
   SQUID = 2,
   OCTO = 3,
-  LAZE,
+  LAZE = 4,
   EXPLOSE,
   HIT
 };

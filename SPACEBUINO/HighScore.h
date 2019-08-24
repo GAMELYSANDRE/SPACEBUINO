@@ -12,7 +12,7 @@ class HS
     ~HS();
 
     // getters Methods
-    int Mode();   // Method for the main menu
+    int Mode();   
 
     // setters methods
     void Mode(int ChangeMode);

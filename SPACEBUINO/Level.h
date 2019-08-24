@@ -12,7 +12,8 @@ class Level
     ~Level();
 
     // getters Methods
-    int Mode();   // Method for the main menu
+    int Mode();
+    int LevelGame();   
 
     // setters methods
     void Mode(int ChangeMode);

@@ -158,7 +158,10 @@ void Enemy::Draw()
             break;
           case (OCTO):
             gb.display.drawImage(m_X, m_Y, IMG_OCTO_HIT);
-            break;  
+            break;
+          case (LAZE):
+            gb.display.drawImage(m_X, m_Y, IMG_LAZE_HIT);
+            break;     
         }
         gb.sound.play("Beep1.wav");
         break;
@@ -179,7 +182,7 @@ void Enemy::Draw()
         gb.display.drawImage(m_X, m_Y, IMG_OCTO_RED);
         break;
       case (LAZE):
-        gb.display.drawImage(m_X, m_Y, IMG_LAZE);
+        gb.display.drawImage(m_X, m_Y, IMG_LAZE_RED);
         break;
       case (EXPLOSE):
         gb.display.drawImage(m_X, m_Y, IMG_EXPLOSE);
@@ -195,7 +198,10 @@ void Enemy::Draw()
             break;
           case (OCTO):
             gb.display.drawImage(m_X, m_Y, IMG_OCTO_HIT);
-            break;   
+            break;
+          case (LAZE):
+            gb.display.drawImage(m_X, m_Y, IMG_LAZE_HIT);
+            break;       
         }
         gb.sound.play("Beep1.wav");
         break;
