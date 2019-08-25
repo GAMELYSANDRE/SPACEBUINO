@@ -14,7 +14,7 @@
 #define LAZE_ANGRY_PT  80
 
 // game configuration variable
-#define SPEED_DESCENT_ENEMIES 600
+#define SPEED_DESCENT_ENEMIES 600 // DEFAULT 600
 
 //----------------------------------------------------------------------
 //              CONSTRUCTOR
@@ -37,7 +37,8 @@ Game::Game ():
   m_AnimateTextOver(70),
   m_PlayMusic(1),
   m_TimePlayMusic(0),
-  m_CountTurn(0)
+  m_CountTurn(0),
+  m_EnemySpeed(1)
 {
   // initialize base
   for (int row = 0 ; row < 4 ; row++)
@@ -52,6 +53,7 @@ Game::Game ():
   m_ShootSpaceShip = new Shoot(10, 3); // Color YELLOW and Speed
   m_Space = new Space();
   m_TypeEnemy = new Enemy();
+  m_Extra = new Capsule(20, 20);
 }
 
 //----------------------------------------------------------------------
@@ -71,6 +73,8 @@ Game::~Game()
   delete Enterprise;
   delete m_ShootSpaceShip;
   delete m_Space;
+  delete m_TypeEnemy;
+  delete m_Extra;
 }
 
 void Game::Reset()
@@ -93,6 +97,7 @@ void Game::Reset()
   m_PlayMusic = 1;
   m_TimePlayMusic = 0;
   m_CountTurn = 0;
+  m_EnemySpeed = 1;
   Enterprise->Reset();
 }
 
@@ -161,9 +166,23 @@ void Game::Start(unsigned long Time)
   EnemyMove(Time);
   EnemyShot();
   VerifyStateSpaceShip();
-  if ( EnemyAllDestroy() == 1 )
+  // next level if all enemies are destroyed and speed enemies
+  if ( EnemyAllDestroy() == 32 )
   {
     SpaceShipAnimate(Time);
+    m_EnemySpeed = 1;
+  }
+  else if ( EnemyAllDestroy() == 16 )
+  {
+     m_EnemySpeed = 2;
+  }
+  else if ( EnemyAllDestroy() == 30 )
+  {
+     m_EnemySpeed = 3;
+  }
+  else if ( EnemyAllDestroy() == 31 )
+  {
+     m_EnemySpeed = 3;
   }
   if (Enterprise->Life() == 0 )
   {
@@ -175,6 +194,22 @@ void Game::Start(unsigned long Time)
     { 
       gb.save.set(10,m_Level);
     }
+  }
+  // activate a capsule
+  if ( m_Extra->State() == true )
+  {
+    m_Extra->Display();
+    m_Extra->Y( m_Extra->Y() + 1 );
+    CapsuleCollision();
+    // deactivates the capsule touches the ground
+    if ( m_Extra->Y() > 70 )
+    {
+      m_Extra->State(false);
+    }
+  }
+  else
+  {
+    gb.lights.clear();
   }
 }
 
@@ -218,7 +253,7 @@ void Game::EnemyTableModif()
 //        Method of controlling the destruction of all enemies
 //----------------------------------------------------------------------
 
-bool Game::EnemyAllDestroy()
+int Game::EnemyAllDestroy()
 {
   int counter = 0;
   // increments the counter
@@ -232,12 +267,7 @@ bool Game::EnemyAllDestroy()
       }
     }
   }
-  // control the counter
-  if ( counter == 32 )
-  {
-    return (true);
-  }
-  return (false);
+  return (counter);
 }
 
 //----------------------------------------------------------------------
@@ -249,6 +279,7 @@ void Game::EnemyMove(unsigned long Time)
   int PosEnemyLeft = 0;
   int PosEnemyRight = 0;
   int PosEnemyY = 0;
+  bool EnemyState = 1; 
   // check if the enemies are dead or alive
   for (int c = 0 ; c < 8 ; c++) // column
   {
@@ -288,11 +319,11 @@ void Game::EnemyMove(unsigned long Time)
       int PosEnemyX = GridEnemy[r][c]->X();
       if (GridEnemy[r][c]->Direction() == 0 and PosEnemyLeft >= 2 )
       {
-        GridEnemy[r][c]->X(PosEnemyX - 1);
+        GridEnemy[r][c]->X(PosEnemyX - m_EnemySpeed);
       }
       if (GridEnemy[r][c]->Direction() == 1 and PosEnemyRight <= 72 )
       {
-        GridEnemy[r][c]->X(PosEnemyX + 1);
+        GridEnemy[r][c]->X(PosEnemyX + m_EnemySpeed);
       }
       // change the left right direction
       if ( PosEnemyLeft <= 2 )
@@ -306,15 +337,20 @@ void Game::EnemyMove(unsigned long Time)
         m_CountTurn++;
       }
       // delay for the descent of the enemies
-      m_CurrentTime = Time;
-      if ( m_CountTurn == SPEED_DESCENT_ENEMIES )
+      if ( m_CountTurn == SPEED_DESCENT_ENEMIES and Enterprise->Life()!=0 )
       {
         for (int row = 0 ; row < 4 ; row++)
         {
           for (int column = 0 ; column < 8 ; column++)
           {
             PosEnemyY = GridEnemy[row][column]->Y();
+            EnemyState = GridEnemy[row][column]->State();
             GridEnemy[row][column]->Y(PosEnemyY + 1);
+            // check if the enemies hit the ground
+            if (PosEnemyY > 50 and EnemyState == 1 )
+            {
+              Enterprise->Life(0);
+            }
           }
         }
         m_CountTurn = 0;
@@ -355,6 +391,8 @@ void Game::EnemyExplosion(unsigned long Time)
             if ( Resistance == 0 )
             {
               GridEnemy[j][i]->Change(EXPLOSE);
+              // to make appear or not a capsule
+              CapsuleChance(GridEnemy[j][i]->X(), GridEnemy[j][i]->Y());
             }
             else
             {
@@ -387,6 +425,38 @@ void Game::EnemyExplosion(unsigned long Time)
   }
 }
 //----------------------------------------------------------------------
+//                  Method that manages the capsules
+//----------------------------------------------------------------------
+void Game::CapsuleChance(int EnemyCoorX, int EnemyCoorY)
+{
+  // chance of showing a capsule
+  int ChanceShowCapsule = random(0, 20);
+  if ( ChanceShowCapsule == 1 and m_Extra->State() == false )
+  {
+      m_Extra->State(true);
+      m_Extra->Move(EnemyCoorX ,EnemyCoorY + 6 );
+  }
+}
+
+void Game::CapsuleCollision ()
+{
+  if ( 
+      ( Enterprise->X() < m_Extra->X() and (Enterprise->X() + 6 ) > m_Extra->X() )
+      or
+      ( Enterprise->X() < ( m_Extra->X() + 5 ) and (Enterprise->X() + 6 ) > m_Extra->X() )
+     )
+  {
+    if ( m_Extra->Y() > Enterprise->Y() and m_Extra->Y() < ( Enterprise->Y() + 6 ) )
+    {
+        gb.lights.fill(GREEN);
+        gb.sound.play("Life2.wav");
+        m_Extra->State(false);
+        Enterprise->Life(Enterprise->Life()+1);
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 //                 Method Display Score and Life
 //----------------------------------------------------------------------
 
@@ -395,7 +465,6 @@ void Game::Score()
   gb.display.setCursor(5, 2);
   gb.display.setColor(WHITE);
   gb.display.print(m_PlayerScore);
-
   gb.display.setColor(WHITE);
   gb.display.setCursor(60, 2);
   gb.display.print(Enterprise->Life());

@@ -4,6 +4,7 @@
 #include "SpaceShip.h"
 #include "Shoot.h"
 #include "Space.h"
+#include "Capsule.h"
 
 class Game
 {
@@ -32,7 +33,7 @@ class Game
     void Score();
 
     void HomepageLevel();
-    void SpaceShipAnimate(unsigned long Time);
+    
 
   private:
 
@@ -50,6 +51,7 @@ class Game
     int m_ShootColumnEnemy;  // save the position of the column (0 to 7)
     int m_ShootLineEnemy;    // save the position of the line (0 to 3)
     int m_CountTurn;         // count the number of enemies turn to go down
+    int m_EnemySpeed;        // speed of enemies
 
     //------------------------------------------------------------------
     //     Variables Game
@@ -66,6 +68,8 @@ class Game
     unsigned long m_TimePlayMusic;// delay play the music
     Space *m_Space;               // pointer on the space
     Enemy *m_TypeEnemy;           // shows the type of enemy
+    // capsule offering bonuses (life, protection)
+    Capsule *m_Extra;             // pointer on the Capsule
 
 
 
@@ -92,6 +96,7 @@ class Game
     //------------------------------------------------------------------
     //     Methods SpaceShip
     //------------------------------------------------------------------
+    void SpaceShipAnimate(unsigned long Time);
     void VerifyStateSpaceShip();
 
     //------------------------------------------------------------------
@@ -100,12 +105,19 @@ class Game
     void EnemyShot();
     void EnemyTableModif();
     void EnemyMove(unsigned long Time);
-    bool EnemyAllDestroy();
+    int EnemyAllDestroy();
     void EnemyExplosion(unsigned long Time);
 
-    //---------------------------
+    //------------------------------------------------------------------
+    //       Methods Capsule
+    //------------------------------------------------------------------
+    void CapsuleChance(int EnemyCoorX, int EnemyCoorY);
+    void CapsuleCollision();
+
+
+    //------------------------------------------------------------------
     //       Methods Game
-    //---------------------------
+    //------------------------------------------------------------------
     void GameOverAnimate(unsigned long Time);
 
 };
