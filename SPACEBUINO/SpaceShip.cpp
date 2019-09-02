@@ -5,19 +5,33 @@
 /*------------------------------------*/
 /*          Constructors              */
 /*------------------------------------*/
-SpaceShip::SpaceShip () : m_X(0), m_Y(0), m_State(1), m_Position(1), m_Life(3)
+SpaceShip::SpaceShip () : 
+ m_X(0), 
+ m_Y(0), 
+ m_State(1), 
+ m_Position(1), 
+ m_Life(3),
+ m_Protection(0),
+ m_ProtectionDuration(2)
 {
 
 }
-SpaceShip::SpaceShip  (int X, int Y ) : m_X(0), m_Y(0), m_State(1), m_Position(1), m_Life(3)
+SpaceShip::SpaceShip  (int X, int Y ) : 
+  m_X(0), 
+  m_Y(0), 
+  m_State(1), 
+  m_Position(1), 
+  m_Life(3),
+  m_Protection(0),
+  m_ProtectionDuration(2)
 {
   m_X = X;
   m_Y = Y;
 }
 
-//------------------------------------------
-//           Getters functions
-//------------------------------------------
+//----------------------------------------------------------------------
+//                       Getters functions
+//----------------------------------------------------------------------
 int SpaceShip::X() const
 {
   return (m_X);
@@ -34,9 +48,18 @@ int SpaceShip::Life() const
 {
   return (m_Life);
 }
-//------------------------------------------
-//          Setters methods
-//------------------------------------------
+bool SpaceShip::Protection() const
+{
+  return (m_Protection);
+}
+int SpaceShip::ProtectionDuration() const
+{
+  return (m_ProtectionDuration);
+}
+
+//----------------------------------------------------------------------
+//                        Setters methods
+//----------------------------------------------------------------------
 void SpaceShip::X(int ChangeX)
 {
   m_X = ChangeX;
@@ -45,7 +68,6 @@ void SpaceShip::Y(int ChangeY)
 {
   m_Y = ChangeY;
 }
-
 void SpaceShip::State(bool ChangeState)
 {
   m_State = ChangeState;
@@ -58,19 +80,33 @@ void SpaceShip::Life(int ChangeLife)
 {
   m_Life = ChangeLife;
 }
+void SpaceShip::Protection(bool ChangeProtection)
+{
+  m_Protection = ChangeProtection;
+}
+void SpaceShip::ProtectionDuration(int ChangeProtectionDuration)
+{
+  m_ProtectionDuration = ChangeProtectionDuration;
+}
+
+//----------------------------------------------------------------------
+//                       reset default settings
+//----------------------------------------------------------------------
 
 void SpaceShip::Reset()
 {
   m_X = 0;
   m_Y = 0;
-  m_State = 1; 
+  m_State = 1;
   m_Position = 1;
   m_Life = 3;
+  m_Protection = 0;
+  m_ProtectionDuration = 2;
 }
 
-//---------------------------------------------------
-//  method that draws the ship following the states
-//---------------------------------------------------
+//----------------------------------------------------------------------
+//            method that draws the ship following the states
+//----------------------------------------------------------------------
 void SpaceShip::Draw()
 {
   if (m_State == 1)
@@ -78,14 +114,35 @@ void SpaceShip::Draw()
     switch (m_Position)
     {
       case 0:
-        gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPLEFT);
+        if( m_Protection == false)
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPLEFT);
+        }
+        else
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPPROTECTLEFT);
+        }
         m_Position = 1;
         break;
       case 1:
-        gb.display.drawImage(m_X, m_Y, IMG_SPACESHIP);
+        if( m_Protection == false)
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIP);
+        }
+        else
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPPROTECT);
+        }
         break;
       case 2:
-        gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPRIGHT);
+        if( m_Protection == false) 
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPRIGHT);
+        }
+        else
+        {
+          gb.display.drawImage(m_X, m_Y, IMG_SPACESHIPPROTECTRIGHT);
+        }
         m_Position = 1;
         break;
       case 3:

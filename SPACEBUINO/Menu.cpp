@@ -3,7 +3,7 @@
 #include <Gamebuino-Meta.h>
 
 //----------------------------------------------------------------------
-//          Constructors              
+//          Constructors
 //----------------------------------------------------------------------
 
 Menu::Menu (const char *MenuTextList[], int MenuSize):
@@ -48,7 +48,7 @@ Menu::~Menu()
   delete m_Space;
 }
 //----------------------------------------------------------------------
-//           Getters Methods      
+//           Getters Methods
 //----------------------------------------------------------------------
 int Menu::Position() const
 {
@@ -57,12 +57,12 @@ int Menu::Position() const
 
 int Menu::Mode() const
 {
-   return(m_Mode);
+  return (m_Mode);
 }
 
 
 //----------------------------------------------------------------------
-//          Setters Methods  
+//          Setters Methods
 //----------------------------------------------------------------------
 void Menu::Mode(int ChangeMode)
 {
@@ -140,7 +140,7 @@ void Menu::MoveText()
   }
   if (gb.buttons.pressed(BUTTON_A))
   {
-    m_Mode=m_MenuPosition;
+    m_Mode = m_MenuPosition;
     gb.sound.playTick();
   }
 }

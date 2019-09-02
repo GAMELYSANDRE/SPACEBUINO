@@ -28,23 +28,6 @@ HS::HS () :
       gb.save.set(rang, m_Score[rang]);
     }
   }
-  // test save
-/*
-    int test=0;
-    gb.save.set(0,test);
-    gb.save.set(1,test);
-    gb.save.set(2,test);
-    gb.save.set(3,test);
-    gb.save.set(4,test);
-
-
-
-    gb.save.set(5,"---");
-    gb.save.set(6,"---");
-    gb.save.set(7,"---");
-    gb.save.set(8,"---");
-    gb.save.set(9,"---");
-*/
   m_Space = new Space();
 }
 
@@ -163,25 +146,25 @@ void HS::Help(unsigned long Time)
   // display title
   Title(Time);
   gb.display.setColor(DARKBLUE);
-  gb.display.drawImage(2,18, IMG_CROSS_UP);
+  gb.display.drawImage(2, 18, IMG_CROSS_UP);
   gb.display.setCursor(15, 20);
   gb.display.println("A B C.");
-  gb.display.drawImage(40,18, IMG_CROSS_DOWN);
+  gb.display.drawImage(40, 18, IMG_CROSS_DOWN);
   gb.display.setCursor(53, 20);
   gb.display.println("A Z Y.");
-  gb.display.drawImage(2,30, IMG_CROSS_RIGHT);
+  gb.display.drawImage(2, 30, IMG_CROSS_RIGHT);
   gb.display.setCursor(15, 32);
   gb.display.println("advance one box");
-  gb.display.drawImage(2,42, IMG_CROSS_LEFT);
+  gb.display.drawImage(2, 42, IMG_CROSS_LEFT);
   gb.display.setCursor(15, 44);
   gb.display.println("back one box");
-  gb.display.drawImage(2,54, IMG_BTN_A);
+  gb.display.drawImage(2, 54, IMG_BTN_A);
   gb.display.setCursor(15, 56);
   gb.display.println("Reset");
-  gb.display.drawImage(40,54, IMG_BTN_B);
+  gb.display.drawImage(40, 54, IMG_BTN_B);
   gb.display.setCursor(53, 56);
   gb.display.println("Save");
-    
+
   if (gb.buttons.released(BUTTON_MENU) )
   {
     m_SwitchHelp = 1;

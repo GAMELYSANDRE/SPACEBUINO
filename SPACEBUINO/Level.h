@@ -13,14 +13,14 @@ class Level
 
     // getters Methods
     int Mode();
-    int LevelGame();   
+    int LevelGame();
 
     // setters methods
     void Mode(int ChangeMode);
-    
+
     //------------------------------------------------------------------
     //                 Methods
-    //------------------------------------------------------------------    
+    //------------------------------------------------------------------
     //display the high scores
     void Display(unsigned long Time);
 
@@ -33,7 +33,7 @@ class Level
     int m_LevelSave;              // Save level
     bool m_Direction;             // Direction animate Right(1) Left(0)
     int m_Mode;                   // Variable main menu
-        
+
     //------------------------------------------------------------------
     //        variable time management for the flashing Image
     //------------------------------------------------------------------
@@ -49,7 +49,7 @@ class Level
     unsigned long m_BreakTimeLevel;   // duration of the break
     int m_MoveX;                      // Movement X image level
     bool m_Animate;
-    
+
     //------------------------------------------------------------------
     //                 Methods
     //------------------------------------------------------------------

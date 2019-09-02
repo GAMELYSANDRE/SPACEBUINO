@@ -14,13 +14,13 @@ class Credit
 
     // getters methods
     int Mode();
-    
+
     // setters methods
     void Mode(int ChangeMode);
 
     // methods
     void Display();
-    
+
   private:
     Space *m_Space;               // pointer on the space
     int m_Mode;

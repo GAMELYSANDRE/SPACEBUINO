@@ -115,7 +115,7 @@ void Enemy::HitChange (Type ChangeType)
   m_TypeEnemyHit = ChangeType;
 }
 //----------------------------------------------------------------------
-//                          Method movement 
+//                          Method movement
 //----------------------------------------------------------------------
 void Enemy::Move (int X, int Y)
 {
@@ -123,7 +123,7 @@ void Enemy::Move (int X, int Y)
   m_Y = Y;
 }
 //----------------------------------------------------------------------
-//                          Method Drawing 
+//                          Method Drawing
 //----------------------------------------------------------------------
 void Enemy::Draw()
 {
@@ -161,7 +161,7 @@ void Enemy::Draw()
             break;
           case (LAZE):
             gb.display.drawImage(m_X, m_Y, IMG_LAZE_HIT);
-            break;     
+            break;
         }
         gb.sound.play("Beep1.wav");
         break;
@@ -201,7 +201,7 @@ void Enemy::Draw()
             break;
           case (LAZE):
             gb.display.drawImage(m_X, m_Y, IMG_LAZE_HIT);
-            break;       
+            break;
         }
         gb.sound.play("Beep1.wav");
         break;

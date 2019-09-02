@@ -38,7 +38,10 @@ Game::Game ():
   m_PlayMusic(1),
   m_TimePlayMusic(0),
   m_CountTurn(0),
-  m_EnemySpeed(1)
+  m_EnemySpeed(1),
+  m_CounterEndGame(0),
+  m_Firework_X(0),
+  m_Firework_Y(0) 
 {
   // initialize base
   for (int row = 0 ; row < 4 ; row++)
@@ -98,6 +101,9 @@ void Game::Reset()
   m_TimePlayMusic = 0;
   m_CountTurn = 0;
   m_EnemySpeed = 1;
+  m_CounterEndGame = 0;
+  m_Firework_X = 0;
+  m_Firework_Y = 0;  
   Enterprise->Reset();
 }
 
@@ -169,20 +175,28 @@ void Game::Start(unsigned long Time)
   // next level if all enemies are destroyed and speed enemies
   if ( EnemyAllDestroy() == 32 )
   {
-    SpaceShipAnimate(Time);
-    m_EnemySpeed = 1;
+    // verify the end game
+    if( m_Level == 20)
+    {
+      EndGame(Time);
+    }
+    else
+    {
+      SpaceShipAnimate(Time);
+      m_EnemySpeed = 1;
+    }
   }
   else if ( EnemyAllDestroy() == 16 )
   {
-     m_EnemySpeed = 2;
+    m_EnemySpeed = 2;
   }
   else if ( EnemyAllDestroy() == 30 )
   {
-     m_EnemySpeed = 3;
+    m_EnemySpeed = 3;
   }
   else if ( EnemyAllDestroy() == 31 )
   {
-     m_EnemySpeed = 3;
+    m_EnemySpeed = 3;
   }
   if (Enterprise->Life() == 0 )
   {
@@ -190,9 +204,9 @@ void Game::Start(unsigned long Time)
     GameOverAnimate(Time);
     // Saves progress levels
     int LevelSave = gb.save.get(10);
-    if( m_Level > LevelSave )
-    { 
-      gb.save.set(10,m_Level);
+    if ( m_Level > LevelSave )
+    {
+      gb.save.set(10, m_Level);
     }
   }
   // activate a capsule
@@ -243,7 +257,7 @@ void Game::EnemyTableModif()
           break;
         case LAZE:
           GridEnemy[row][column]->Resistance(4);
-          break;            
+          break;
       }
     }
   }
@@ -279,7 +293,7 @@ void Game::EnemyMove(unsigned long Time)
   int PosEnemyLeft = 0;
   int PosEnemyRight = 0;
   int PosEnemyY = 0;
-  bool EnemyState = 1; 
+  bool EnemyState = 1;
   // check if the enemies are dead or alive
   for (int c = 0 ; c < 8 ; c++) // column
   {
@@ -337,7 +351,7 @@ void Game::EnemyMove(unsigned long Time)
         m_CountTurn++;
       }
       // delay for the descent of the enemies
-      if ( m_CountTurn == SPEED_DESCENT_ENEMIES and Enterprise->Life()!=0 )
+      if ( m_CountTurn == SPEED_DESCENT_ENEMIES and Enterprise->Life() != 0 )
       {
         for (int row = 0 ; row < 4 ; row++)
         {
@@ -430,28 +444,79 @@ void Game::EnemyExplosion(unsigned long Time)
 void Game::CapsuleChance(int EnemyCoorX, int EnemyCoorY)
 {
   // chance of showing a capsule
-  int ChanceShowCapsule = random(0, 20);
+  int ChanceShowCapsule = 0;
+  if (m_Level < 6)
+  {
+    ChanceShowCapsule = random(0, 20);
+  }
+  else if ( m_Level < 11 and m_Level > 5 )
+  {
+    ChanceShowCapsule = random(0, 10);
+  }
+  else if ( m_Level < 16 and m_Level > 10 )
+  {
+    ChanceShowCapsule = random(0, 5);
+  }
+  else if ( m_Level < 21 and m_Level > 15 )
+  {
+    ChanceShowCapsule = random(0, 2);
+  }
+  int TypeCapsule = random(0, 2);
+  // check if the protection is not active
+  if ( Enterprise->Protection() == true and TypeCapsule == 1)
+  {
+    TypeCapsule = 0;  
+  }
+  // check number life
+  if ( Enterprise->Life() == 4 and TypeCapsule == 0)
+  {
+    TypeCapsule = 2;
+  }
   if ( ChanceShowCapsule == 1 and m_Extra->State() == false )
   {
+    switch (TypeCapsule)
+    {
+      case 0:
+        m_Extra->Color(CAPSULE_GREEN);
+        break;
+      case 1:
+        m_Extra->Color(CAPSULE_BLUE);
+        break;
+      case 2:
+        break;
+    }
+    if ( TypeCapsule != 2)
+    {
       m_Extra->State(true);
-      m_Extra->Move(EnemyCoorX ,EnemyCoorY + 6 );
+      m_Extra->Move(EnemyCoorX , EnemyCoorY + 6 );
+    }
   }
 }
 
 void Game::CapsuleCollision ()
 {
-  if ( 
-      ( Enterprise->X() < m_Extra->X() and (Enterprise->X() + 6 ) > m_Extra->X() )
-      or
-      ( Enterprise->X() < ( m_Extra->X() + 5 ) and (Enterprise->X() + 6 ) > m_Extra->X() )
-     )
+  if (
+    ( Enterprise->X() < m_Extra->X() and (Enterprise->X() + 6 ) > m_Extra->X() )
+    or
+    ( Enterprise->X() < ( m_Extra->X() + 5 ) and (Enterprise->X() + 6 ) > m_Extra->X() )
+  )
   {
     if ( m_Extra->Y() > Enterprise->Y() and m_Extra->Y() < ( Enterprise->Y() + 6 ) )
     {
-        gb.lights.fill(GREEN);
-        gb.sound.play("Life2.wav");
-        m_Extra->State(false);
-        Enterprise->Life(Enterprise->Life()+1);
+      switch (m_Extra->Color())
+      {
+        case CAPSULE_GREEN:
+          gb.lights.fill(GREEN);
+          gb.sound.play("Life2.wav");
+          Enterprise->Life(Enterprise->Life() + 1);
+          break;
+        case CAPSULE_BLUE:
+          gb.lights.fill(BLUE);
+          gb.sound.play("Protection2.wav");
+          Enterprise->Protection(1);
+          break;
+      }
+      m_Extra->State(false);
     }
   }
 }
@@ -465,6 +530,10 @@ void Game::Score()
   gb.display.setCursor(5, 2);
   gb.display.setColor(WHITE);
   gb.display.print(m_PlayerScore);
+  gb.display.setColor(GRAY);
+  gb.display.setCursor(25, 2);
+  gb.display.print("LEVEL ");
+  gb.display.print(m_Level);
   gb.display.setColor(WHITE);
   gb.display.setCursor(60, 2);
   gb.display.print(Enterprise->Life());
@@ -540,17 +609,37 @@ void Game::VerifyStateSpaceShip()
   {
     if (m_ShootEnemy->Y() <= (Enterprise->Y()) + 6 and m_ShootEnemy->Y() >= Enterprise->Y())
     {
-      Enterprise->Position(3);
-      Enterprise->Draw();
-      if ( m_StateBreakTimeSpaceShip == 1 and Enterprise->State() == 1 )
+      // check the protection
+      if (Enterprise->Protection() == false )
       {
-        m_BreakTimeSpaceShip = m_CurrentTime + 500;
-        m_StateBreakTimeSpaceShip = 0;
-        EnemyShot();
-        Enterprise->Life(Enterprise->Life() - 1);
-        gb.lights.fill(RED);
+        Enterprise->Position(3);
+        Enterprise->Draw();
+        if ( m_StateBreakTimeSpaceShip == 1 and Enterprise->State() == 1 )
+        {
+          m_BreakTimeSpaceShip = m_CurrentTime + 500;
+          m_StateBreakTimeSpaceShip = 0;
+          EnemyShot();
+          Enterprise->Life(Enterprise->Life() - 1);
+          gb.lights.fill(RED);
+        }
+      }
+      // disincrement protection
+      else
+      {
+        // reset shot
+        m_ShootEnemy->Position(100, 59);
+        // disincrement protection
+        Enterprise->ProtectionDuration(Enterprise->ProtectionDuration() - 1);
+        gb.lights.fill(BLUE);
+        if ( Enterprise->ProtectionDuration() == 0)
+        { 
+          Enterprise->ProtectionDuration(2);
+          Enterprise->Protection(false);
+        }
+        gb.sound.play("Collect_pt_3.wav");
       }
     }
+    
   }
   if (m_CurrentTime > m_BreakTimeSpaceShip and m_StateBreakTimeSpaceShip == false)
   {
@@ -691,7 +780,10 @@ void Game::SpaceShipAnimate(unsigned long Time)
   if ( Enterprise->Y() < 0 )
   {
     m_Play = 0;
-    m_Level++;
+    if ( m_Level !=20 )
+    {
+      m_Level++;
+    }
   }
   if ( m_PlayMusic == 1 )
   {
@@ -705,6 +797,7 @@ void Game::SpaceShipAnimate(unsigned long Time)
   {
     m_PlayMusic = 0;
   }
+  m_Extra->State(false);
 }
 
 //----------------------------------------------------------------------
@@ -758,3 +851,58 @@ void Game::GameOverAnimate(unsigned long Time)
   }
   gb.lights.fill(GREEN);
 }
+
+//----------------------------------------------------------------------
+//                                 END GAME
+//----------------------------------------------------------------------
+
+void Game::EndGame(unsigned long Time)
+{
+
+  // animate background
+  m_Space->Display();
+  // animate firawork
+  m_CounterEndGame++;
+  if (m_CounterEndGame == 1)
+  {
+    // desactive light
+    gb.lights.clear();
+    m_Firework_X = random (10,70);
+    m_Firework_Y = random (10,50);
+  }
+  if (m_CounterEndGame < 15)
+  {
+    gb.display.drawImage(m_Firework_X, m_Firework_Y, IMG_FIREWORK_GREEN);
+    gb.lights.drawPixel(m_Firework_X/40, m_Firework_Y/15, GREEN);
+    gb.display.setColor(YELLOW);
+    gb.display.fillRect(Enterprise->X() + 2, Enterprise->Y(), 2, 100);
+  }
+  else 
+  {
+    m_CounterEndGame = 0;
+  }  
+  // title and spaceship
+  gb.display.setColor(54, 255, 175);
+  gb.display.setCursor(5, 10);
+  gb.display.print("CONGRATULATIONS !");
+  Enterprise->Y(27);
+  Enterprise->X(37);
+  Enterprise->Draw();
+  if ( m_PlayMusic == 1 )
+  {
+
+    gb.sound.play("Win.wav");
+    if (m_TimePlayMusic == 0)
+    {
+      m_TimePlayMusic  = Time + 4000;
+    }
+  }
+  if ( m_CurrentTime > m_TimePlayMusic )
+  {
+    m_PlayMusic = 0;
+  }
+  if (gb.buttons.pressed(BUTTON_A))
+  {
+    m_GameOver = 1;
+  }
+};  

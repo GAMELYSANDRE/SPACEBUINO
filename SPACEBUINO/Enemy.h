@@ -31,7 +31,7 @@ class Enemy
     int Point() const;
     int Angry() const;
     Type TypeEnemy() const;
-    
+
 
     // setters methods
     void X(int ChangeX);
@@ -51,7 +51,7 @@ class Enemy
 
     // Method changes the type of enemy
     void Change (Type TypeEnemy);
-    
+
   private:
 
     int m_X;            // X coordinate

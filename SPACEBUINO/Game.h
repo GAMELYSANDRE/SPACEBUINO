@@ -14,9 +14,6 @@ class Game
     Game ();
     // Destructor
     ~Game();
-    //------------------------------------------------------------------
-    //     Variables Game
-    //------------------------------------------------------------------
 
     // getters functions
     bool Play() const;
@@ -27,13 +24,11 @@ class Game
     void Level(int ChangeLevel);
     void GameOver(bool ChangeGameOver);
 
+    // Methods Game
     void Reset();
     void Start(unsigned long Time);
-    
-    void Score();
-
     void HomepageLevel();
-    
+    void EndGame(unsigned long Time);
 
   private:
 
@@ -70,8 +65,10 @@ class Game
     Enemy *m_TypeEnemy;           // shows the type of enemy
     // capsule offering bonuses (life, protection)
     Capsule *m_Extra;             // pointer on the Capsule
-
-
+    int m_CounterEndGame;         // counter end game
+    int m_Firework_X;
+    int m_Firework_Y;
+    
 
     //------------------------------------------------------------------
     //  variable time management for the animation of the explosion
@@ -79,7 +76,7 @@ class Game
     unsigned long m_CurrentTime;       // current time
     bool m_StateBreakTimeEnemy;        // active(1) or inactive(0) pause
     unsigned long m_BreakTimeEnemy;    // duration of the break
-    
+
     //------------------------------------------------------------------
     //  variable time management for the animation of the starship
     //------------------------------------------------------------------
@@ -87,8 +84,8 @@ class Game
     unsigned long m_BreakTimeSpaceShip;// duration of the break
 
     //------------------------------------------------------------------
-    //             save the variable j and i to change state        
-    //             of the enemy at the end of the time elapse       
+    //             save the variable j and i to change state
+    //             of the enemy at the end of the time elapse
     //------------------------------------------------------------------
     int j_Save;                 // j -> first column in the enemy grid
     int i_Save;                 // i -> Second column in the enemy grid
@@ -118,6 +115,7 @@ class Game
     //------------------------------------------------------------------
     //       Methods Game
     //------------------------------------------------------------------
+    void Score();
     void GameOverAnimate(unsigned long Time);
 
 };
