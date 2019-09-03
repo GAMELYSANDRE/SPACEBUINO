@@ -325,7 +325,7 @@ void Game::EnemyMove(unsigned long Time)
       break;
     }
   }
-
+  // enemy movement
   for (int r = 0 ; r < 4 ; r++) // row
   {
     for (int c = 0 ; c < 8 ; c++) // column
