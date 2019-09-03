@@ -1,7 +1,7 @@
 # SPACEBUINO #
 **A video game for Gamebuino META (https://gamebuino.com/fr)**
 
-![IMAGE GAME MENU](/IMAGES/00001.BMP)
+![IMAGE GAME MENU](/IMAGES/SPACEBUINO_2.gif)
 
 **Tags:** #SPACE #INVADERS #shoot #pixelart #arduino #cplusplus #gamebuino
 
