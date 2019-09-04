@@ -23,10 +23,10 @@ FR
 
 *Les scores et la progression dans le jeu sont sauvegardés*
 
-**
+
 
 ## Commandes du jeu ##
-** Mouvements et Actions **
+**Mouvements et Actions:**
 - **Se déplacer:** flèches droite et gauche
 - **Tir:** (A)
 
@@ -34,7 +34,7 @@ FR
 - **VERTE:** 1 vie supplémentaire ( pas plus de 4 vies )
 - **BLUE:** Protection ( 2 tirs max ensuite la protection disparait )
 
-**
+
 
 **Bon jeu ! et n'hésitez pas à me faire des retours**
 
