@@ -19,7 +19,7 @@ FR
 
 *Le jeu possède 20 niveaux différents ( plus ou moins difficiles ) et des capsules a récupéré pour des petits bonus*
 
-*Il est possible de choisir le niveau à rejouer dans la rubrique : " LEVELS " * 
+*Il est possible de choisir le niveau à rejouer dans la rubrique : LEVELS * 
 
 *Les scores et la progression dans le jeu sont sauvegardés*
 
@@ -32,7 +32,7 @@ FR
 
 **Capsules:**
 - **VERTE:** 1 vie supplémentaire ( pas plus de 4 vies )
-- **BLUE:** Protection ( 2 tirs max ensuite la protection disparait )
+- **BLUE:**  Protection ( 2 tirs max ensuite la protection disparait )
 
 
 
